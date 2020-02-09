@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <_name>工具カバー</_name>
+  <id>jp.tanibayashi.yoichi.ytani.pliers_cover</id>
+  <dependency type="executable" location="extensions">pliers_cover.py</dependency>
+
+  <param name="title" type="description">
+    工具カバー型紙
+    (単位：mm)
+  </param>
+  <param name="title_base" type="description">
+    ベース
+  </param>
+  <param name="w1" type="float" min="5" max="200" _gui-text="幅1(w1)">
+  50</param>
+  <param name="w2" type="float" min="10" max="200" _gui-text="幅2(w2)">
+  60</param>
+  <param name="h1" type="float" min="10" max="200" _gui-text="長さ1(h1)">
+  40</param>
+  <param name="h2" type="float" min="10" max="200" _gui-text="長さ2(h2)">
+  40</param>
+  <param name="title_band" type="description" xml:space="preserve">
+    バンド
+  </param>
+  <param name="bw" type="float" min="5" max="30" _gui-text="幅(bw)">
+  15</param>
+  <param name="bl" type="float" min="20" max="100" _gui-text="長さ(bl)">
+  30</param>
+  <param name="r1" type="float" min="5" max="50" _gui-text="留め具メス径(r1)">
+  10</param>
+  <param name="r2" type="float" min="5" max="50" _gui-text="留め具オス径(r2)">
+  10</param>
+  
+  <param name="title_nuishiro" type="description" xml:space="preserve">
+    縫いしろ
+  </param>
+  <param name="d1" type="float" min="1" max="5" _gui-text="縫いしろ(d1)">
+  3</param>
+  <param name="d2" type="float" min="1" max="5" _gui-text="針穴間隔(d2)">
+  3</param>
+  <param name="r3" type="float" min="0.5" max="2" _gui-text="針穴経(r3)">
+  1.0</param>
+
+  <effect needs-live-preview="false">
+    <object-type>all</object-type>
+    <effects-menu>
+      <submenu _name="ytani"/>
+    </effects-menu>
+  </effect>
+  <script>
+    <command reldir="extensions" interpreter="python">pliers_cover.py</command>
+  </script>
+</inkscape-extension>
