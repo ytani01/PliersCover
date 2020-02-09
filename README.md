@@ -62,3 +62,67 @@ Z: closepath
 ```
 ex: d="M 50,60 H 60 l 20,50 Z"
 ```
+
+
+### A.2 描画
+
+#### 基本書式
+
+現在のレイヤーに、``object``を描画。
+
+* ``style``: 線のスタイル、
+* ``attribute``: 座標、サイズ
+* ``inkex.addNS``: 図形の種類(長方形、円、パスなど)と形式(SVGなど)
+
+
+ex.1
+```
+parent = self.current_layer
+style = { ... }
+attribute = { ... }
+object = inkex.etree.SubElement(parent,
+	                            inkex.addNS('rect', 'svg'),
+								attribute)
+```
+
+#### style: 線のスタイル
+ex.1
+```
+style = {
+  'stroke': '#000000',
+  'stroke-width': '0.2',
+  'fill': 'none'
+}
+```
+
+
+### A.2 attributes: 座標、サイズ
+
+ex.1: rect
+```
+attribs_rect = {
+  'style': simplestyle.formatStyle(style),
+  'width': '30',
+  'height': '20',
+  'x': '100',
+  'y': '200'
+}
+```
+
+ex.2: circle
+```
+attribs_circle = {
+  'style': simplestyle.formatStyle(style),
+  'r': '100',
+  'cx': '150',
+  'cy': '200'
+}
+```
+
+ex.3: path
+```
+attribs_path = {
+  'style': simplestyle.formatStyle(style),
+  'd': 'M 50,60 H 60 l 20,50 Z'
+}
+```
