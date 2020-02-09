@@ -100,22 +100,22 @@ class ytaniFoo(inkex.Effect):
             'x': str(self.options.bw),
             'y': str(self.options.bl)
         }
-        obj1=inkex.etree.SubElement(parent,
-                                    inkex.addNS('rect', 'svg'),
-                                    attribs1)
+        obj1 = inkex.etree.SubElement(parent,
+                                      inkex.addNS('rect', 'svg'),
+                                      attribs1)
         """
 
-        # base
-        d_base = self.mkpath_base(x1, y1,
+        # pattern1
+        d_pattern1 = self.mkpath_pattern1(x1, y1,
                                   w1, w2, h1, h2,
                                   bw, bl)
-        attribs_base = {
+        attribs_pattern1 = {
             'style': simplestyle.formatStyle(style),
-            'd': d_base
+            'd': d_pattern1
         }
-        obj_base = inkex.etree.SubElement(parent,
+        obj_pattern1 = inkex.etree.SubElement(parent,
                                           inkex.addNS('path', 'svg'),
-                                          attribs_base)
+                                          attribs_pattern1)
         attribs_hole1 = {
             'style': simplestyle.formatStyle(style),
             'r': str('%.1f' % (r1 / 2)),
@@ -178,7 +178,7 @@ class ytaniFoo(inkex.Effect):
             x3 += d1a
             x4 += d1a
 
-    def mkpath_base(self, x, y, w1, w2, h1, h2, bw, bl):
+    def mkpath_pattern1(self, x, y, w1, w2, h1, h2, bw, bl):
         p1 = 0.75
 
         d = 'M %d,%d' % (x, y)
