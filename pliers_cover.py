@@ -72,7 +72,7 @@ class ytaniFoo(inkex.Effect):
 
         # inkex.errormsg('x1=%d, cx=%d' % (x1, cx))
 
-        # error check
+        ## error check
         if w1 >= w2:
             msg = "Error: w1(%d) >= w2(%d) !" % (w1, w2)
             inkex.errormsg(_(msg))
@@ -84,7 +84,7 @@ class ytaniFoo(inkex.Effect):
             return
             
 
-        # draw
+        ## parent, style
         parent = self.current_layer
         style = {
             'stroke': '#000000',
@@ -92,61 +92,12 @@ class ytaniFoo(inkex.Effect):
             'fill': 'none'
         }
         
-        """
-        attribs1 = {
-            'style': simplestyle.formatStyle(style),
-            'height': str(self.options.h1),
-            'width': str(self.options.w1),
-            'x': str(self.options.bw),
-            'y': str(self.options.bl)
-        }
-        obj1 = inkex.etree.SubElement(parent,
-                                      inkex.addNS('rect', 'svg'),
-                                      attribs1)
-        """
+        ## pattern1
+        self.draw_pattern1(style, parent,
+                           x1, y1, w1, w2, h1, h2, bw, bl, cx1, cy2, r1)
 
-        # pattern1
-        d_pattern1 = self.mkpath_pattern1(x1, y1,
-                                  w1, w2, h1, h2,
-                                  bw, bl)
-        attribs_pattern1 = {
-            'style': simplestyle.formatStyle(style),
-            'd': d_pattern1
-        }
-        obj_pattern1 = inkex.etree.SubElement(parent,
-                                          inkex.addNS('path', 'svg'),
-                                          attribs_pattern1)
-        attribs_hole1 = {
-            'style': simplestyle.formatStyle(style),
-            'r': str('%.1f' % (r1 / 2)),
-            'cx': str(cx1),
-            'cy': str(cy1)
-        }
-        obj_hole1 = inkex.etree.SubElement(parent,
-                                           inkex.addNS('circle', 'svg'),
-                                           attribs_hole1)
+        self.draw_pattern2(style, parent, x2, y2, w1, w2, h1, h2, cx2, cy2, r2)
 
-        # top
-        d_top = self.mkpath_top(x2, y2,
-                                w1, w2, h1, h2)
-        attribs_top = {
-            'style': simplestyle.formatStyle(style),
-            'd': d_top
-        }
-        obj_top = inkex.etree.SubElement(parent,
-                                         inkex.addNS('path', 'svg'),
-                                         attribs_top)
-
-        attribs_hole2 = {
-            'style': simplestyle.formatStyle(style),
-            'r': str('%.1f' % (r2 / 2)),
-            'cx': str(cx2),
-            'cy': str(cy2)
-        }
-        obj_hole2 = inkex.etree.SubElement(parent,
-                                          inkex.addNS('circle', 'svg'),
-                                          attribs_hole2)
-        
         # hari
         n_hari = int(round((w1 - d1) / d2))
         d1a = float(w1 - d1) / float(n_hari)
@@ -178,6 +129,63 @@ class ytaniFoo(inkex.Effect):
             x3 += d1a
             x4 += d1a
 
+        return
+
+    def draw_pattern1(self, style, parent,
+                      x1, y1, w1, w2, h1, h2, bw, bl, cx, cy, r):
+
+        ## pattern
+        d_pattern1 = self.mkpath_pattern1(x1, y1,
+                                  w1, w2, h1, h2,
+                                  bw, bl)
+        attribs_pattern1 = {
+            'style': simplestyle.formatStyle(style),
+            'd': d_pattern1
+        }
+        obj_pattern1 = inkex.etree.SubElement(parent,
+                                          inkex.addNS('path', 'svg'),
+                                          attribs_pattern1)
+
+        ## hole
+        attribs_hole1 = {
+            'style': simplestyle.formatStyle(style),
+            'r': str('%.1f' % (r / 2)),
+            'cx': str(cx),
+            'cy': str(cy)
+        }
+        obj_hole1 = inkex.etree.SubElement(parent,
+                                           inkex.addNS('circle', 'svg'),
+                                           attribs_hole1)
+
+        ## needle-hole
+        n_hari = int(round((w1 - d1)
+
+    def draw_pattern2(self, style, parent,
+                      x, y, w1, w2, h1, h2, cx, cy, r):
+
+        ## pattern
+        d_pattern2 = self.mkpath_pattern2(x, y, w1, w2, h1, h2)
+        attribs_pattern2 = {
+            'style': simplestyle.formatStyle(style),
+            'd': d_pattern2
+        }
+        obj_pattern2 = inkex.etree.SubElement(parent,
+                                         inkex.addNS('path', 'svg'),
+                                         attribs_pattern2)
+
+        ## hole
+        attribs_hole2 = {
+            'style': simplestyle.formatStyle(style),
+            'r': str('%.1f' % (r / 2)),
+            'cx': str(cx),
+            'cy': str(cy)
+        }
+        obj_hole2 = inkex.etree.SubElement(parent,
+                                          inkex.addNS('circle', 'svg'),
+                                          attribs_hole2)
+
+        ## needle-hole
+        
     def mkpath_pattern1(self, x, y, w1, w2, h1, h2, bw, bl):
         p1 = 0.75
 
@@ -198,7 +206,7 @@ class ytaniFoo(inkex.Effect):
 
         return d
         
-    def mkpath_top(self, x, y, w1, w2, h1, h2):
+    def mkpath_pattern2(self, x, y, w1, w2, h1, h2):
         p1 = 0.75
 
         d = 'M %d,%d' % (x, y)
