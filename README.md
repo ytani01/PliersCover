@@ -96,7 +96,7 @@ style = {
 ```
 
 
-### A.2 attributes: 座標、サイズ
+#### attributes: 座標、サイズ
 
 ex.1: rect
 ```
