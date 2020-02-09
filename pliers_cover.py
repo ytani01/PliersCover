@@ -103,7 +103,6 @@ class ytaniFoo(inkex.Effect):
         obj1 = inkex.etree.SubElement(parent,
                                       inkex.addNS('rect', 'svg'),
                                       attribs1)
-
         """
 
         # pattern1
