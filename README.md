@@ -30,8 +30,8 @@ $ ./setup-linux.sh
 (管理権限が必要)
 
 コピーするファイル
-* ytani_foo.inx
-* ytani_foo.py
+* plier_cover.inx
+* plier_cover.py
 
 コピー先フォルダ
 ```
