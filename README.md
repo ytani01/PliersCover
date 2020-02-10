@@ -1,6 +1,6 @@
-# Inkscape 拡張テスト
+# Inkscape extension: 工具カバー型紙自動作成
 
-![Inkscape extension: 工具カバー](docs/inkscape1.png)
+![Inkscape extension: 工具カバー](docs/inkscape2.png)
 
 ## 1. インストール
 
