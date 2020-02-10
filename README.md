@@ -14,7 +14,7 @@ Inkscape用のエクステンション(拡張機能)です。
 
 ``Inkscape`` の拡張機能なので、まずは、``Inkscape`` をインストールして下さい。
 
-[Inkscape 公式](https://inkscape.org/ja/)
+=> [Inkscape 公式サイト](https://inkscape.org/ja/)
 
 ### 1.1 Linux
 
