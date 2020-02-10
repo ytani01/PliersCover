@@ -35,7 +35,7 @@ linuxと同じ？？
 * plier_cover.py
 
 コピー先フォルダ
-```bash
+```
 C:\Program Files\Inkscape\share\extensions
 ```
 
