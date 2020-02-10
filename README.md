@@ -1,7 +1,5 @@
 # Inkscape extension: 工具カバー型紙自動作成
 
-![Inkscape extension: 工具カバー](docs/inkscape2.png)
-
 ## 概要
 
 ラジオペンチやニッパーなどの工具のカバーの型紙を自動作成する
@@ -44,11 +42,16 @@ C:\Program Files\Inkscape\share\extensions
 * メニューから以下を選択
 
 [拡張(extensions, エクステンション)]-[ytani]-[工具カバー] 
-![](docs/inkscape1.png)
+
+![menu](docs/inkscape1.png)
 
 * ダイヤログにサイズを入力
 
-* 適用してもダイヤログは消えないので、Ctrl-Z(Undo)して何度でも実行可
+![Inkscape extension: 工具カバー](docs/inkscape2.png)
+
+* [ライブビュー]をチェックすると、画面で確認しながらサイズを調整できます。
+
+* [Apply(適用)]しても画面上変化がないように見えますが、キャンパスに描画されます。
 
 
 ### 2.1 注意・コツなど
