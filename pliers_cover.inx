@@ -19,6 +19,11 @@
   40</param>
   <param name="h2" type="float" min="10" max="200" _gui-text="長さ2(h2)">
   40</param>
+  <param name="dia1" type="float" min="5" max="50" _gui-text="留め具メス径(dia1)">
+  10</param>
+  <param name="dia2" type="float" min="5" max="50" _gui-text="留め具オス径(dia2)">
+  10</param>
+
   <param name="title_band" type="description" xml:space="preserve">
     バンド
   </param>
@@ -26,28 +31,27 @@
   15</param>
   <param name="bl" type="float" min="20" max="100" _gui-text="長さ(bl)">
   30</param>
-  <param name="r1" type="float" min="5" max="50" _gui-text="留め具メス径(r1)">
-  10</param>
-  <param name="r2" type="float" min="5" max="50" _gui-text="留め具オス径(r2)">
-  10</param>
+  <param name="bf" type="float" min="0.1" max="1" _gui-text="曲線係数(bf)">
+  0.7</param>
   
   <param name="title_nuishiro" type="description" xml:space="preserve">
     縫いしろ
   </param>
   <param name="d1" type="float" min="1" max="5" _gui-text="縫いしろ(d1)">
   3</param>
-  <param name="d2" type="float" min="1" max="5" _gui-text="針穴間隔(d2)">
+  <param name="d2" type="float" min="1" max="10" _gui-text="針穴間隔(d2)">
   3</param>
-  <param name="r3" type="float" min="0.5" max="2" _gui-text="針穴経(r3)">
-  1.0</param>
+  <param name="dia3" type="float" min="0.5" max="2" _gui-text="針穴経(dia3)">
+  1</param>
 
-  <effect needs-live-preview="false">
+  <effect needs-live-preview="true">
     <object-type>all</object-type>
     <effects-menu>
       <submenu _name="ytani"/>
     </effects-menu>
   </effect>
   <script>
-    <command reldir="extensions" interpreter="python">pliers_cover.py</command>
+    <command reldir="extensions"
+	     interpreter="python">pliers_cover.py</command>
   </script>
 </inkscape-extension>

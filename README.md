@@ -1,5 +1,7 @@
 # Inkscape 拡張テスト
 
+![Inkscape extension: 工具カバー](docs/inkscape1.png)
+
 ## 1. インストール
 
 ### 1.1 Linux
