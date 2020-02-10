@@ -23,6 +23,9 @@ class PlierCover(inkex.Effect):
                                      dest="bw", help="")
         self.OptionParser.add_option("--bl", action="store", type="float",
                                      dest="bl", help="")
+        self.OptionParser.add_option("--bf", action="store", type="float",
+                                     dest="bf", help="")
+
         self.OptionParser.add_option("--dia1", action="store", type="float",
                                      dest="dia1", help="")
         self.OptionParser.add_option("--dia2", action="store", type="float",
@@ -50,6 +53,8 @@ class PlierCover(inkex.Effect):
 
         bw = self.options.bw
         bl = self.options.bl
+        bf = self.options.bf
+
         dia1 = self.options.dia1
         dia2 = self.options.dia2
 
@@ -70,8 +75,14 @@ class PlierCover(inkex.Effect):
             inkex.errormsg(_(msg))
             return
 
-        self.draw_pattern1((offset_x, offset_y),
-                           w1, w2, h1, h2, bw, bl, dia1)
+        #
+        # draw
+        #
+        base_points = self.mkpoints_pattern1_base(w1, w2, h1, h2, bw, bl)
+        self.draw_pattern1((offset_x, offset_y), base_points, bw*bf, dia1)
+
+        new_points = self.zoom_points(base_points, 0.9)
+        self.draw_pattern1((offset_x + 100, offset_y), new_points, bw*bf, dia1)
 
         return
 
@@ -83,22 +94,22 @@ class PlierCover(inkex.Effect):
         }
         return style
 
-    def draw_pattern1(self, offset, w1, w2, h1, h2, bw, bl, dia1,
+    def draw_pattern1(self, offset, base_points, bw_bf, dia1,
                       color='#000000',
                       stroke_width=0.2,
                       parent=None):
 
-        self.draw_pattern1_base(offset, w1, w2, h1, h2, bw, bl,
+        self.draw_pattern1_base(offset, base_points, bw_bf,
                                 color, stroke_width, parent)
-        self.draw_pattern1_button_hole(offset, w1, w2, h1, h2, bw, bl, dia1,
+        self.draw_pattern1_button_hole(offset, base_points, dia1,
                                        color, stroke_width, parent)
 
-    def draw_pattern1_base(self, offset, w1, w2, h1, h2, bw, bl,
+    def draw_pattern1_base(self, offset, base_points, bw_bf,
                            color='#000000',
                            stroke_width=0.2,
                            parent=None):
 
-        svg_d = self.mkpath_pattern1_base(offset, w1, w2, h1, h2, bw, bl)
+        svg_d = self.mkpath_pattern1_base(offset, base_points, bw_bf)
         return self.draw_path(svg_d,
                               color=color,
                               stroke_width=stroke_width,
@@ -122,53 +133,99 @@ class PlierCover(inkex.Effect):
                                       inkex.addNS('path', 'svg'),
                                       attr)
 
-    def mkpath_pattern1_base(self, offset, w1, w2, h1, h2, bw, bl):
-        p1 = 0.75
+    def mkpoints_pattern1_base(self, w1, w2, h1, h2, bw, bl):
+        points = []
 
-        (x0, y0) = offset
+        (x0, y0) = (0, 0)
         (x, y) = (x0, y0)
 
         dw1 = (w2 - w1) / 2
         dw2 = (w2 - bw) / 2
 
         x += dw1
-        d = 'M %f,%f' % (x, y)
+        points.append((x, y))
 
         x += w1
-        d += ' L %f,%f' % (x, y)
+        points.append((x, y))
 
         x = x0 + w2
         y += h1
-        d += ' L %f,%f' % (x, y)
+        points.append((x, y))
 
         y += h2
-        d += ' L %f,%f' % (x, y)
+        points.append((x, y))
 
         x -= dw2
-        d += ' L %f,%f' % (x, y)
+        points.append((x, y))
 
-        y = y0 + h1 + h2 + bl - bw / 2
-        d += ' L %f,%f' % (x, y)
+        y += bl - bw / 2
+        points.append((x, y))
 
-        x1 = x
-        y1 = y + bw * p1
         x = x0 + dw2
-        d += ' C %f,%f %f,%f %f,%f' % (x1, y1, x, y1, x, y)
+        points.append((x, y))
 
         y = y0 + h1 + h2
-        d += ' L %f,%f' % (x, y)
+        points.append((x, y))
 
         x = x0
-        d += ' L %f,%f' % (x, y)
+        points.append((x, y))
 
         y = y0 + h1
-        d += ' L %f,%f' % (x, y)
+        points.append((x, y))
+
+        return points
+
+    def zoom_points(self, points, zf=1.0):
+        new_points = []
+
+        for (x, y) in points:
+            (x2, y2) = (x * zf, y * zf)
+            new_points.append((x2, y2))
+
+        return new_points
+
+    def mkpath_pattern1_base(self, offset, base_points, bw_bf):
+
+        (x0, y0) = offset
+
+        (x, y) = base_points[0]
+        d = 'M %f,%f' % (x + x0, y + y0)
+
+        (x, y) = base_points[1]
+        d += ' L %f,%f' % (x + x0, y + y0)
+
+        (x, y) = base_points[2]
+        d += ' L %f,%f' % (x + x0, y + y0)
+
+        (x, y) = base_points[3]
+        d += ' L %f,%f' % (x + x0, y + y0)
+
+        (x, y) = base_points[4]
+        d += ' L %f,%f' % (x + x0, y + y0)
+
+        (x, y) = base_points[5]
+        d += ' L %f,%f' % (x + x0, y + y0)
+
+        x1 = x
+        y1 = y + bw_bf
+        (x, y) = base_points[6]
+        d += ' C %f,%f %f,%f %f,%f' % (x1 + x0, y1 + y0,
+                                       x + x0, y1 + y0,
+                                       x + x0, y + y0)
+
+        (x, y) = base_points[7]
+        d += ' L %f,%f' % (x + x0, y + y0)
+
+        (x, y) = base_points[8]
+        d += ' L %f,%f' % (x + x0, y + y0)
+
+        (x, y) = base_points[9]
+        d += ' L %f,%f' % (x + x0, y + y0)
 
         d += ' Z'
         return d
 
-    def draw_pattern1_button_hole(self, offset, w1, w2, h1, h2,
-                                  bw, bl, dia1,
+    def draw_pattern1_button_hole(self, offset, base_points, dia1,
                                   color='#000000',
                                   stroke_width=0.2,
                                   parent=None):
@@ -178,8 +235,8 @@ class PlierCover(inkex.Effect):
         (x0, y0) = offset
         (x, y) = (x0, y0)
 
-        x += w2 / 2
-        y += h1 + h2 + bl - bw / 2
+        x = base_points[2][0] / 2 + x0
+        y = base_points[5][1] + y0
         r = dia1 / 2
 
         style = self.mkstyle(color, stroke_width)
@@ -193,43 +250,6 @@ class PlierCover(inkex.Effect):
         return inkex.etree.SubElement(parent,
                                       inkex.addNS('circle', 'svg'),
                                       attr)
-
-    #####
-    def draw_pattern2(self, style, parent,
-                      x, y, w1, w2, h1, h2,
-                      cx, cy, r, d1):
-
-        # pattern
-        d_pattern2 = self.mkpath_pattern2(x, y, w1, w2, h1, h2)
-        attribs_pattern2 = {
-            'style': simplestyle.formatStyle(style),
-            'd': d_pattern2
-        }
-        inkex.etree.SubElement(parent,
-                               inkex.addNS('path', 'svg'),
-                               attribs_pattern2)
-
-        # hole
-        attribs_hole2 = {
-            'style': simplestyle.formatStyle(style),
-            'r': str('%.1f' % (r / 2)),
-            'cx': str(cx),
-            'cy': str(cy)
-        }
-        inkex.etree.SubElement(parent,
-                               inkex.addNS('circle', 'svg'),
-                               attribs_hole2)
-
-    def mkpath_pattern2(self, x, y, w1, w2, h1, h2):
-        d = 'M %d,%d' % (x, y)
-        d += ' h %d' % (w1)
-        d += ' l %.1f,%d' % ((w2 - w1) / 2, h1)
-        d += ' v %d' % (h2)
-        d += ' h %.1f' % (-w2)
-        d += ' v %d' % (-h2)
-        d += ' Z'
-
-        return d
 
 
 if __name__ == '__main__':
