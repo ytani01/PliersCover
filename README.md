@@ -12,7 +12,7 @@ Inkscape用のエクステンション(拡張機能)です。
 
 ### 1.1 Linux
 
-```
+```bash
 $ cd
 $ git clone ...
 $ cd PlierCover
@@ -35,7 +35,7 @@ linuxと同じ？？
 * plier_cover.py
 
 コピー先フォルダ
-```
+```bash
 C:\Program Files\Inkscape\share\extensions
 ```
 
@@ -122,18 +122,18 @@ class Foo(inkex.Effect):
 
 
 ex.1
-```
+```python
 parent = self.current_layer
 style = { ... }
 attribute = { ... }
 object = inkex.etree.SubElement(parent,
-	                            inkex.addNS('rect', 'svg'),
-								attribute)
+	inkex.addNS('rect', 'svg'),
+	attribute)
 ```
 
 #### style: 線のスタイル
 ex.1
-```
+```python
 style = {
   'stroke': '#000000',
   'stroke-width': '0.2',
@@ -145,7 +145,7 @@ style = {
 #### attributes: 座標、サイズ
 
 ex.1: rect
-```
+```python
 attribs_rect = {
   'style': simplestyle.formatStyle(style),
   'width': '30',
@@ -156,7 +156,7 @@ attribs_rect = {
 ```
 
 ex.2: circle
-```
+```python
 attribs_circle = {
   'style': simplestyle.formatStyle(style),
   'r': '100',
@@ -166,7 +166,7 @@ attribs_circle = {
 ```
 
 ex.3: path
-```
+```python
 attribs_path = {
   'style': simplestyle.formatStyle(style),
   'd': 'M 50,60 H 60 l 20,50 Z'
