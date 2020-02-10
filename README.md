@@ -93,9 +93,26 @@ ex: d="M 50,60 H 60 l 20,50 Z"
 ```
 
 
-### A.2 描画
+### A.2 Inkscape extension 描画
 
 #### 基本書式
+
+```python
+import inkex
+import simplestyle
+
+inkex.localize()
+
+class Foo(inkex.Effect):
+    def __init__(self):
+	    inkex.Effect.__init__(self)
+		self.OptionParser.add_option("--opt", action="store", type="float",dest="opt", help="...")
+		
+
+    def effect(self):
+	    :
+		
+```
 
 現在のレイヤーに、``object``を描画。
 
