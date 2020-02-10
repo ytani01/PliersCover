@@ -36,6 +36,7 @@ C:\Program Files\Inkscape\share\extensions
 * メニューから以下を選択
 
 [拡張(extensions, エクステンション)]-[ytani]-[工具カバー] 
+![](docs/inkscape1.png)
 
 * ダイヤログにサイズを入力
 
