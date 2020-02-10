@@ -50,6 +50,7 @@ C:\Program Files\Inkscape\share\extensions
 
 * 適用してもダイヤログは消えないので、Ctrl-Z(Undo)して何度でも実行可
 
+
 ### 2.1 注意・コツなど
 
 * [ライブビュー]にチェックを入れると画面で形を確認しながら、サイズを調整できます。
@@ -61,7 +62,6 @@ C:\Program Files\Inkscape\share\extensions
 * [Apply(適用)]をクリックすると、実際にキャンバスに描画します。
 (画面上は変化がないですが、ダイアログを閉じても残っています。)
 
-* ダイアログ画面が
 
 ## A. Memo
 
