@@ -41,8 +41,14 @@ linuxと同じ？？
 * plier_cover.py
 
 コピー先フォルダ
+* (ユーザーごと)
 ```
-C:\Program Files\Inkscape\share\extensions
+C:\Users\ユーザー名\AppData\Roming\inkscape\extensions
+```
+
+* 全ユーザー(管理者権限が必要)
+```
+C:\Program Files\Inkscape\share\extensions)
 ```
 
 
