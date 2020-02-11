@@ -16,8 +16,24 @@ Inkscape用のエクステンション(拡張機能)です。
 
 => [Inkscape 公式サイト](https://inkscape.org/ja/)
 
-### 1.1 Linux
+### 1.1 ファイルのコピー
 
+以下の２つのファイルを所定のフォルダにコピーする。
+
+コピーするファイル
+* plier_cover.inx
+* plier_cover.py
+
+
+#### 1.1.1 Linux
+
+コピー先ディレクトリ(フォルダ)
+* (ユーザー毎)
+```
+~/.config/inkscape/extensions
+```
+
+``setup.sh`` で自動的に上記ディレクトにコピーすることができます。
 ```bash
 $ cd
 $ git clone ...
@@ -25,23 +41,22 @@ $ cd PlierCover
 $ ./setup-linux.sh
 ```
 
+* 全ユーザー(管理者権限が必要)
+```
+/usr/share/inkscape/extensions
+```
 
-### 1.2 Mac
+
+#### 1.1.2 Mac
 
 linuxと同じ？？
 
 
-### 1.3 Windows
-
-以下の２つのファイルを所定のフォルダにコピーする。
-(管理権限が必要)
-
-コピーするファイル
-* plier_cover.inx
-* plier_cover.py
+#### 1.1.3 Windows
 
 コピー先フォルダ
-* (ユーザーごと)
+
+* ユーザー毎
 ```
 C:\Users\ユーザー名\AppData\Roming\inkscape\extensions
 ```
