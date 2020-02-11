@@ -1,14 +1,171 @@
+#
+# -*- coding: utf-8 -*-
+#
+# (c) Yoichi Tanibayashi
+#
 import inkex
 import simplestyle
 import math
 """
+??
 $ sudo apt install python-lxml
 """
 inkex.localize()
-# inkex.errormsg(_("Hello, world."))
+
+
+class SvgObj(object):
+    DEF_COLOR = '#000000'
+    DEF_STROKE_WIDTH = 0.2
+    DEF_STROKE_DASHARRAY = 'none'
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.type = None
+        self.attr = {}
+
+    def mkstyle(self, color=DEF_COLOR, stroke_width=DEF_STROKE_WIDTH,
+                stroke_dasharray=DEF_STROKE_DASHARRAY):
+        style = {
+            'stroke': color,
+            'stroke-width': str(stroke_width),
+            'stroke-dasharray': str(stroke_dasharray),
+            'fill': 'none'
+        }
+        return style
+
+    def draw(self, color=DEF_COLOR, stroke_width=DEF_STROKE_WIDTH,
+             stroke_dasharray=DEF_STROKE_DASHARRAY):
+
+        style = self.mkstyle(color=color, stroke_width=stroke_width,
+                             stroke_dasharray=stroke_dasharray)
+
+        self.attr['style'] = simplestyle.formatStyle(style)
+        return inkex.etree.SubElement(self.parent,
+                                      inkex.addNS(self.type, 'svg'),
+                                      self.attr)
+
+class SvgCircle(SvgObj):
+    DEF_COLOR = '#FF0000'
+    DEF_STROKE_WIDTH = 0.2
+    DEF_STROKE_DASHARRAY = 'none'
+
+    def __init__(self, parent, cx, cy, r):
+        super(SvgCircle, self).__init__(parent)
+        
+        self.cx = cx
+        self.cy = cy
+        self.r = r
+
+        self.type = 'circle'
+
+    def draw(self, color=DEF_COLOR, stroke_width=DEF_STROKE_WIDTH,
+             stroke_dasharray=DEF_STROKE_DASHARRAY):
+
+        self.attr['cx'] = str(self.cx)
+        self.attr['cy'] = str(self.cy)
+        self.attr['r'] = str(self.r)
+
+        return super(SvgCircle, self).draw(color,
+                                           stroke_width, stroke_dasharray)
+
+
+class SvgButtonHole1(SvgCircle):
+    def __init__(self, parent, offset, base_xy, dia1):
+        (x0, y0) = offset
+        (x1, y1) = base_xy
+        self.r = dia1 / 2
+        self.cx = x1 / 2 + x0
+        self.cy = y1 + y0
+        super(SvgButtonHole1, self).__init__(parent, self.cx, self.cy, self.r)
+
+
+class SvgButtonHole2(SvgCircle):
+    def __init__(self, parent, offset, base_xy, dia2):
+        (x0, y0) = offset
+        (x1, y1) = base_xy
+        self.r = dia2 / 2
+        self.cx = x1 / 2 + x0
+        self.cy = y1 - self.r - 5 + y0
+        super(SvgButtonHole2, self).__init__(parent, self.cx, self.cy, self.r)
+
+
+class SvgPath(SvgObj):
+    DEF_COLOR = '#0000FF'
+    DEF_STROKE_WIDTH = 0.2
+    DEF_STROKE_DASHARRAY = 'none'
+
+    def __init__(self, parent, svg_d):
+        super(SvgPath, self).__init__(parent)
+
+        self.svg_d = svg_d
+
+        self.type = 'path'
+
+    def draw(self, color=DEF_COLOR, stroke_width=DEF_STROKE_WIDTH,
+             stroke_dasharray=DEF_STROKE_DASHARRAY):
+
+        self.attr['d'] = self.svg_d
+
+        return super(SvgPath, self).draw(color,
+                                         stroke_width, stroke_dasharray)
+
+
+class SvgPattern(SvgPath):
+    def __init__(self, parent, offset, points_base, bw_bf):
+        self.svg_d = self.mkpath(offset, points_base, bw_bf)
+        super(SvgPattern, self).__init__(parent, self.svg_d)
+
+    def mkpath(self, offset, points_base, bw_bf=1):
+        '''
+        to be override
+        '''
+        pass
+
+
+class SvgPattern1(SvgPattern):
+    def mkpath(self, offset, points_base, bw_bf):
+        (x0, y0) = offset
+
+        for i, (x, y) in enumerate(points_base):
+            (x1, y1) = (x + x0, y + y0)
+            if i == 0:
+                d = 'M %f,%f' % (x1, y1)
+            elif i == 7:
+                d += ' L %f,%f' % (x1, y1)
+                x2 = x
+                y2 = y + bw_bf
+            elif i == 8:
+                d += ' C %f,%f %f,%f %f,%f' % (x2 + x0, y2 + y0,
+                                               x1     , y2 + y0,
+                                               x1     , y1)
+            else:
+                d += ' L %f,%f' % (x + x0, y + y0)
+        d += ' Z'
+
+        return d
+
+
+class SvgPattern2(SvgPattern):
+    def mkpath(self, offset, points_base, bw_bf):
+        (x0, y0) = offset
+
+        for i, (x, y) in enumerate(points_base):
+            (x1, y1) = (x + x0, y + y0)
+            if i == 0:
+                d = 'M %f,%f' % (x1, y1)
+            elif i >= 6:
+                break
+            else:
+                d += ' L %f,%f' % (x1, y1)
+        d += ' Z'
+
+        return d
 
 
 class PlierCover(inkex.Effect):
+    DEF_OFFSET_X = 20
+    DEF_OFFSET_Y = 20
+
     def __init__(self):
         inkex.Effect.__init__(self)
         self.OptionParser.add_option("--w1", action="store", type="float",
@@ -44,9 +201,6 @@ class PlierCover(inkex.Effect):
         main
         """
         # parameters
-        offset_x = 20
-        offset_y = 20
-
         w1 = self.options.w1
         w2 = self.options.w2
         h1 = self.options.h1
@@ -62,6 +216,10 @@ class PlierCover(inkex.Effect):
         d1 = self.options.d1
         d2 = self.options.d2
         dia3 = self.options.dia3
+
+        w = w2
+        offset_x = self.DEF_OFFSET_X + w / 2
+        offset_y = self.DEF_OFFSET_Y
 
         #
         # error check
@@ -86,54 +244,58 @@ class PlierCover(inkex.Effect):
         self.draw_pattern1((offset_x, offset_y), points_base, bw*bf, dia1)
         self.draw_needle((offset_x, offset_y), points_needle, d2, dia3)
 
-        offset_x += points_base[4][0] + 10
-        self.draw_pattern2((offset_x, offset_y), points_base, bw*bf, dia2)
-        self.draw_needle((offset_x, offset_y), points_needle, d2, dia3)
-
-        '''
-        offset_x += points_base[2][0] + 10
-        new_points = self.zoom_points(points_base, 0.9)
-        self.draw_pattern1((offset_x, offset_y), new_points, bw*bf, dia1)
-        '''
+        offset_x += w + 10
+        points_base2 = self.mirror_points(points_base)
+        self.draw_pattern2((offset_x, offset_y), points_base2, bw*bf, dia2)
+        points_needle2 = self.mirror_points(points_needle)
+        self.draw_needle((offset_x, offset_y), points_needle2, d2, dia3)
 
         return
+
+    def mirror_points(self, points):
+        new_points = []
+
+        for (x, y) in points:
+            new_x = -x
+            new_points.append((new_x, y))
+
+        return new_points
 
     def mkpoints_pattern1_base(self, w1, w2, h1, h2, bw, bl):
         points = []
 
-        (x0, y0) = (0, 0)
-        (x, y) = (x0, y0)
-
         dw1 = (w2 - w1) / 2
         dw2 = (w2 - bw) / 2
 
-        y = y0 + h1 + h2
+        (x0, y0) = (-(w2 / 2), 0)
+
+        (x, y) = (x0, y0 + h1 + h2)
         points.append((x, y))
 
         y = y0 + h1
         points.append((x, y))
 
-        x += dw1
+        x = -(w1 / 2)
         y = y0
         points.append((x, y))
 
-        x += w1
+        x = w1 / 2
         points.append((x, y))
 
-        x = x0 + w2
+        x = w2 / 2
         y += h1
         points.append((x, y))
 
         y += h2
         points.append((x, y))
 
-        x -= dw2
+        x = bw / 2
         points.append((x, y))
 
         y += bl - bw / 2
         points.append((x, y))
 
-        x = x0 + dw2
+        x = -(bw / 2)
         points.append((x, y))
 
         y = y0 + h1 + h2
@@ -174,15 +336,6 @@ class PlierCover(inkex.Effect):
 
         return points
 
-    def zoom_points(self, points, zf=1.0):
-        new_points = []
-
-        for (x, y) in points:
-            (x2, y2) = (x * zf, y * zf)
-            new_points.append((x2, y2))
-
-        return new_points
-
     def draw_obj_path(self,
                       svg_d='M 0,0 L 100,0 L 100,100 Z',
                       color='#000000',
@@ -204,178 +357,45 @@ class PlierCover(inkex.Effect):
                                       inkex.addNS('path', 'svg'),
                                       attr)
 
-    def draw_obj_circle(self, cx, cy, r,
-                        color='#000000',
-                        stroke_width=0.2,
-                        stroke_dasharray='none',
-                        parent=None):
-        style = self.mkstyle(color=color,
-                             stroke_width=stroke_width,
-                             stroke_dasharray=stroke_dasharray)
-
-        attr = {
-            'style': simplestyle.formatStyle(style),
-            'cx': str(cx),
-            'cy': str(cy),
-            'r': str(r)
-        }
-
-        return inkex.etree.SubElement(parent,
-                                      inkex.addNS('circle', 'svg'),
-                                      attr)
-
     def mkstyle(self, color='#000000', stroke_width=0.2,
                 stroke_dasharray='none'):
+
         style = {
             'stroke': color,
             'stroke-width': str(stroke_width),
             'stroke-dasharray': str(stroke_dasharray),
             'fill': 'none'
         }
+
         return style
 
-    #
-    # pattern1
-    #
     def draw_pattern1(self, offset, points_base, bw_bf, dia1,
                       stroke_width=0.2,
-                      stroke_dasharray='none',
-                      parent=None):
+                      stroke_dasharray='none'):
 
-        self.draw_pattern1_base(offset, points_base, bw_bf,
-                                color='#0000FF',
-                                stroke_width=stroke_width,
-                                stroke_dasharray=stroke_dasharray,
-                                parent=parent)
+        p = SvgPattern1(self.current_layer, offset,
+                        points_base, bw_bf)
+        p.draw(color='#0000FF', stroke_width=stroke_width,
+               stroke_dasharray=stroke_dasharray)
 
-        self.draw_pattern1_button_hole(offset, points_base, dia1,
-                                       color='#FF0000',
-                                       stroke_width=stroke_width,
-                                       stroke_dasharray=stroke_dasharray,
-                                       parent=parent)
+        c = SvgButtonHole1(self.current_layer, offset,
+                           (0, points_base[7][1]), dia1)
+        c.draw(color='#FF0000', stroke_width=stroke_width,
+               stroke_dasharray=stroke_dasharray)
 
-    def draw_pattern1_base(self, offset, points_base, bw_bf,
-                           color='#000000',
-                           stroke_width=0.2,
-                           stroke_dasharray='none',
-                           parent=None):
-
-        svg_d = self.mkpath_pattern1_base(offset, points_base, bw_bf)
-
-        return self.draw_obj_path(svg_d,
-                                  color=color,
-                                  stroke_width=stroke_width,
-                                  stroke_dasharray=stroke_dasharray,
-                                  parent=parent)
-
-    def mkpath_pattern1_base(self, offset, points_base, bw_bf):
-
-        (x0, y0) = offset
-
-        for i, (x, y) in enumerate(points_base):
-            if i == 0:
-                d = 'M %f,%f' % (x + x0, y + y0)
-            elif i == 7:
-                d += ' L %f,%f' % (x + x0, y + y0)
-                x1 = x
-                y1 = y + bw_bf
-            elif i == 8:
-                d += ' C %f,%f %f,%f %f,%f' % (x1 + x0, y1 + y0,
-                                               x + y0, y1 + y0,
-                                               x + x0, y + y0)
-            else:
-                d += ' L %f,%f' % (x + x0, y + y0)
-        d += ' Z'
-
-        return d
-
-    def draw_pattern1_button_hole(self, offset, points_base, dia1,
-                                  color='#000000',
-                                  stroke_width=0.2,
-                                  stroke_dasharray='none',
-                                  parent=None):
-        if parent is None:
-            parent = self.current_layer
-
-        (x0, y0) = offset
-        r = dia1 / 2
-        x = points_base[4][0] / 2 + x0
-        y = points_base[7][1] + y0
-
-        return self.draw_obj_circle(x, y, r,
-                                    color=color,
-                                    stroke_width=stroke_width,
-                                    stroke_dasharray=stroke_dasharray,
-                                    parent=parent)
-
-    #
-    # pattern2
-    #
     def draw_pattern2(self, offset, points_base, bw_bf, dia2,
                       color='#000000',
                       stroke_width=0.2,
-                      stroke_dasharray='none',
-                      parent=None):
+                      stroke_dasharray='none'):
 
-        self.draw_pattern2_base(offset, points_base, bw_bf,
-                                color='#0000FF',
-                                stroke_width=stroke_width,
-                                stroke_dasharray=stroke_dasharray,
-                                parent=parent)
+        p = SvgPattern2(self.current_layer, offset,
+                        points_base, bw_bf)
+        p.draw(color='#0000FF', stroke_width=stroke_width,
+               stroke_dasharray=stroke_dasharray)
 
-        self.draw_pattern2_button_hole(offset, points_base, dia2,
-                                       color='#FF0000',
-                                       stroke_width=stroke_width,
-                                       stroke_dasharray=stroke_dasharray,
-                                       parent=parent)
-
-    def draw_pattern2_base(self, offset, points_base, bw_bf,
-                           color='#000000',
-                           stroke_width=0.2,
-                           stroke_dasharray='none',
-                           parent=None):
-
-        svg_d = self.mkpath_pattern2_base(offset, points_base, bw_bf)
-        return self.draw_obj_path(svg_d,
-                                  color=color,
-                                  stroke_width=stroke_width,
-                                  stroke_dasharray=stroke_dasharray,
-                                  parent=parent)
-
-    def mkpath_pattern2_base(self, offset, points_base, bw_bf):
-        (x0, y0) = offset
-
-        for i, (x, y) in enumerate(points_base):
-            if i == 0:
-                d = 'M %f,%f' % (x + x0, y + y0)
-            if i >= 6:
-                break
-            else:
-                d += ' L %f,%f' % (x + x0, y + y0)
-        d += ' Z'
-
-        return d
-
-    def draw_pattern2_button_hole(self, offset, points_base, dia2,
-                                  color='#FF0000',
-                                  stroke_width=0.2,
-                                  stroke_dasharray='none',
-                                  parent=None):
-        if parent is None:
-            parent = self.current_layer
-
-        r = dia2 / 2
-
-        (x0, y0) = offset
-        (x1, y1) = points_base[5]
-        x = x1 / 2 + x0
-        y = y1 - r - 5 + y0
-
-        return self.draw_obj_circle(x, y, r,
-                                    color=color,
-                                    stroke_width=stroke_width,
-                                    stroke_dasharray=stroke_dasharray,
-                                    parent=parent)
+        c = SvgButtonHole2(self.current_layer, offset,
+                           (0, points_base[0][1]), dia2)
+        c.draw('#FF0000', stroke_width, stroke_dasharray)
 
     #
     # common

@@ -79,6 +79,9 @@ C:\Program Files\Inkscape\share\extensions)
 ``[Ctrl]+[マウススクロール]`` で画面の大きさを調整してから、
 やり直して下さい。
 
+* ``縫いしろ``や針穴のパラメータを微調整調整して、
+針穴がきれいに並ぶようにしましょう。
+![](docs/needle1.gif)
 
 
 ## A. Memo
