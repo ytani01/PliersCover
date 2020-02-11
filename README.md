@@ -28,7 +28,7 @@ Inkscape用のエクステンション(拡張機能)です。
 #### 1.1.1 Linux
 
 コピー先ディレクトリ(フォルダ)
-* (ユーザー毎)
+* ユーザー毎
 ```
 ~/.config/inkscape/extensions
 ```
