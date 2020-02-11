@@ -58,7 +58,7 @@ linuxと同じ？？
 
 * ユーザー毎
 ```
-C:\Users\ユーザー名\AppData\Roming\inkscape\extensions
+C:\Users\ユーザー名\AppData\Roaming\inkscape\extensions
 ```
 
 * 全ユーザー(管理者権限が必要)
