@@ -23,31 +23,16 @@ class SvgObj(object):
         self.type = None
         self.attr = {}
 
-    def mkstyle(self, color=DEF_COLOR, stroke_width=DEF_STROKE_WIDTH,
-                stroke_dasharray=DEF_STROKE_DASHARRAY):
-        style = {
-            'stroke': color,
-            'stroke-width': str(stroke_width),
-            'stroke-dasharray': str(stroke_dasharray),
-            'fill': 'none'
-        }
-
-        # inkex.errormsg('style=%s' % str(style))
-
-        return style
-
     def draw(self, x, y,
              color=DEF_COLOR,
              stroke_width=DEF_STROKE_WIDTH,
              stroke_dasharray=DEF_STROKE_DASHARRAY):
-        '''
-        (x, y): offset
-        '''
-        # inkex.errormsg('color=%s' % color)
-
-        style = self.mkstyle(color=color, stroke_width=stroke_width,
-                             stroke_dasharray=stroke_dasharray)
-
+        style = {
+            'stroke': str(color),
+            'storke-width': str(stroke_width),
+            'stroke-dasharray': str(stroke_dasharray),
+            'fill': 'none'
+        }
         self.attr['style'] = simplestyle.formatStyle(style)
         return inkex.etree.SubElement(self.parent,
                                       inkex.addNS(self.type, 'svg'),
