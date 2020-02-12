@@ -323,10 +323,12 @@ class Pattern2:
     def draw(self, x, y):
         self.base.draw(x + self.pattern1.w2 / 2, y,
                        color='#0000FF')
+
         self.hole.draw(x + self.pattern1.w2 / 2,
                        y + self.pattern1.h1 + self.pattern1.h2
                        - self.hole.r - self.pattern1.d1,
                        color='#FF0000')
+
         for (nh, p) in self.needle_hole:
             (px, py) = p
             nh.draw(x + px + self.pattern1.w2 / 2, y + py)
@@ -392,12 +394,12 @@ class PlierCover(inkex.Effect):
         #
         if w1 >= w2:
             msg = "Error: w1(%d) >= w2(%d) !" % (w1, w2)
-            inkex.errormsg(_(msg))
+            inkex.errormsg(msg)
             return
 
         if dia1 >= bw:
             msg = "Error: dia1(%d) >= bw(%d) !" % (dia1, bw)
-            inkex.errormsg(_(msg))
+            inkex.errormsg(msg)
             return
 
         #
@@ -411,131 +413,10 @@ class PlierCover(inkex.Effect):
         pattern1.draw(offset_x, offset_y)
 
         offset_x += w2 + 10
-        
+
         pattern2 = Pattern2(self.current_layer, pattern1, dia2)
         pattern2.draw(offset_x, offset_y)
         return
-
-        points_base = self.mkpoints_pattern1_base(w1, w2, h1, h2, bw, bl)
-        points_needle1 = self.mkpoints_needle(points_base,
-                                              w1, w2, h1, d1, d2)
-
-        self.draw_pattern1((offset_x, offset_y), points_base, bw*bf, dia1)
-        self.draw_needle((offset_x, offset_y), points_needle1, d2, dia3)
-
-        offset_x += w + 10
-        points_base2 = self.reverse_points_points(points_base)
-        self.draw_pattern2((offset_x, offset_y), points_base2, bw*bf, dia2)
-        points_needle2 = self.reverse_points_points(points_needle1)
-        self.draw_needle((offset_x, offset_y), points_needle2, d2, dia3)
-
-        return
-
-    def mkpoints_pattern1_base(self, w1, w2, h1, h2, bw, bl):
-        points = []
-
-        (x0, y0) = (-(w2 / 2), 0)
-
-        (x, y) = (x0, y0 + h1 + h2)
-        points.append((x, y))
-
-        y = y0 + h1
-        points.append((x, y))
-
-        x = -(w1 / 2)
-        y = y0
-        points.append((x, y))
-
-        x = w1 / 2
-        points.append((x, y))
-
-        x = w2 / 2
-        y += h1
-        points.append((x, y))
-
-        y += h2
-        points.append((x, y))
-
-        x = bw / 2
-        points.append((x, y))
-
-        y += bl - bw / 2
-        points.append((x, y))
-
-        x = -(bw / 2)
-        points.append((x, y))
-
-        y = y0 + h1 + h2
-        points.append((x, y))
-
-        return points
-
-    def mkpoints_needle(self, points_base, w1, w2, h1, d1, d2):
-        points = []
-
-        a1 = 2
-
-        b = (w2 - w1) * d1 / (2 * h1)
-        a2 = math.sqrt(b ** 2 + d1 ** 2) - b
-
-        (x1, y1) = points_base[0]
-        (x2, y2) = (x1 + d1, y1 - d2)
-        points.append((x2, y2))
-
-        (x1, y1) = points_base[1]
-        (x2, y2) = (x1 + d1, y1 + a1)
-        points.append((x2, y2))
-
-        (x1, y1) = points_base[2]
-        (x2, y2) = (x1 + a2, y1 + d1)
-        points.append((x2, y2))
-
-        (x1, y1) = points_base[3]
-        (x2, y2) = (x1 - a2, y1 + d1)
-        points.append((x2, y2))
-
-        (x1, y1) = points_base[4]
-        (x2, y2) = (x1 - d1, y1 + a1)
-        points.append((x2, y2))
-
-        (x1, y1) = points_base[5]
-        (x2, y2) = (x1 - d1, y1 - d2)
-        points.append((x2, y2))
-
-        return points
-
-    def draw_obj_path(self,
-                      svg_d='M 0,0 L 100,0 L 100,100 Z',
-                      color='#000000',
-                      stroke_width=0.3,
-                      stroke_dasharray='none',
-                      parent=None):
-        if parent is None:
-            parent = self.current_layer
-
-        style = self.mkstyle(color=color,
-                             stroke_width=stroke_width,
-                             stroke_dasharray=stroke_dasharray)
-
-        attr = {
-            'style': simplestyle.formatStyle(style),
-            'd': svg_d
-        }
-        return inkex.etree.SubElement(parent,
-                                      inkex.addNS('path', 'svg'),
-                                      attr)
-
-    def mkstyle(self, color='#000000', stroke_width=0.3,
-                stroke_dasharray='none'):
-
-        style = {
-            'stroke': color,
-            'stroke-width': str(stroke_width),
-            'stroke-dasharray': str(stroke_dasharray),
-            'fill': 'none'
-        }
-
-        return style
 
 
 if __name__ == '__main__':
