@@ -256,6 +256,8 @@ class Part1:
         return math.sqrt((p2x - p1x) ** 2 + (p2y - p1y) ** 2)
                     
     def split_points(self, p1, p2, n):
+        if n == 0:
+            return [p1]
         (p1x, p1y) = p1
         (p2x, p2y) = p2
         (dx, dy) = ((p2x - p1x) / n, (p2y -p1y) / n)
