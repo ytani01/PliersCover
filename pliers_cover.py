@@ -27,13 +27,12 @@ class SvgObj(object):
              color=DEF_COLOR,
              stroke_width=DEF_STROKE_WIDTH,
              stroke_dasharray=DEF_STROKE_DASHARRAY):
-        style = {
-            'stroke': color,
-            'storke-width': stroke_width,
-            'stroke-dasharray': stroke_dasharray,
-            'fill': 'none'
-        }
-        self.attr['style'] = simplestyle.formatStyle(style)
+
+        self.attr['style'] = simplestyle.formatStyle({
+            'stroke': str(color),
+            'stroke-width': str(stroke_width),
+            'stroke-dasharray': str(stroke_dasharray),
+            'fill': 'none'})
         return inkex.etree.SubElement(self.parent,
                                       inkex.addNS(self.type, 'svg'),
                                       self.attr)
@@ -201,55 +200,60 @@ class Part1:
         return points
 
     def get_needle_points(self, points_base, d1, d2, dia):
-        points = []
+        points1 = []
         for i, (px, py) in enumerate(points_base):
             (nx, ny) = (px, py)
             if i == 0:
                 nx += d1
                 ny -= d1
-                points.append((nx, ny))
+                points1.append((nx, ny))
             if i == 1:
                 nx += d1
                 ny += dia / 2
-                points.append((nx, ny))
+                points1.append((nx, ny))
             if i == 2:
                 nx += d1 - dia / 2
                 ny += d1
-                points.append((nx, ny))
+                points1.append((nx, ny))
             if i == 3:
                 nx -= d1 - dia / 2
                 ny += d1
-                points.append((nx, ny))
+                points1.append((nx, ny))
             if i == 4:
                 nx -= d1
                 ny += dia / 2
-                points.append((nx, ny))
+                points1.append((nx, ny))
             if i == 5:
                 nx -= d1
                 ny -= d1
-                points.append((nx, ny))
+                points1.append((nx, ny))
             if i > 5:
                 break
 
-        points0 = []
-        for i in range(len(points)-1):
-            (p1x, p1y) = points[i]
-            (p2x, p2y) = points[i+1]
-            points2 = []
-            if i == 0:
-                dp = p2y - p1y
-                n = int(abs(round(dp / d2)))
-                dy = dp / n
-                inkex.errormsg('(%s,%s)-(%s,%s),dp=%s,n=%s,dy=%s' % (p1x, p1y, p2x, p2y, dp, n, dy))
-                for i in range(n):
-                    px = p1x
-                    py = p1y + dy * i
-                    points0.append((px, py))
-                inkex.errormsg('points0=%s' % points0)
-            else:
-                points0.append((p1x, p1y))
+        points2 = []
+        for i in range(len(points1)-1):
+            d = self.distance(points1[i], points1[i+1])
+            n = int(abs(round(d / d2)))
+            for p in self.split_points(points1[i], points1[i+1], n):
+                points2.append(p)
+        points2.append(points1[-1])
 
-        return points0
+        return points2
+
+    def distance(self, p1, p2):
+        (p1x, p1y) = p1
+        (p2x, p2y) = p2
+        return math.sqrt((p2x - p1x) ** 2 + (p2y - p1y) ** 2)
+                    
+    def split_points(self, p1, p2, n):
+        (p1x, p1y) = p1
+        (p2x, p2y) = p2
+        (dx, dy) = ((p2x - p1x) / n, (p2y -p1y) / n)
+        
+        p = []
+        for i in range(n):
+            p.append(((p1x + dx * i), (p1y + dy * i)))
+        return p
 
     def draw(self, x, y):
         self.base.draw(x + self.w2 / 2, y, color='#0000FF')
