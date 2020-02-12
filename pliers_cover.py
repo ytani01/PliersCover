@@ -28,9 +28,9 @@ class SvgObj(object):
              stroke_width=DEF_STROKE_WIDTH,
              stroke_dasharray=DEF_STROKE_DASHARRAY):
         style = {
-            'stroke': str(color),
-            'storke-width': str(stroke_width),
-            'stroke-dasharray': str(stroke_dasharray),
+            'stroke': color,
+            'storke-width': stroke_width,
+            'stroke-dasharray': stroke_dasharray,
             'fill': 'none'
         }
         self.attr['style'] = simplestyle.formatStyle(style)
@@ -109,9 +109,9 @@ class SvgPolygon(SvgPath):
         return svg_d
 
 
-class SvgPattern1Base(SvgPath):
+class SvgPart1Base(SvgPath):
     def __init__(self, parent, points, bw_bf):
-        super(SvgPattern1Base, self).__init__(parent, points)
+        super(SvgPart1Base, self).__init__(parent, points)
         self.bw_bf = bw_bf
 
     def mk_svg_d(self, x, y, points, bw_bf=1):
@@ -132,7 +132,7 @@ class SvgPattern1Base(SvgPath):
         return d
 
 
-class Pattern1:
+class Part1:
     def __init__(self, parent,
                  w1, w2, h1, h2, bw, bl, bf, dia1, d1, d2, dia3):
         self.parent = parent
@@ -149,7 +149,7 @@ class Pattern1:
         self.dia3 = dia3
 
         self.points_base = self.mk_points(w1, w2, h1, h2, bw, bl)
-        self.base = SvgPattern1Base(self.parent, self.points_base,
+        self.base = SvgPart1Base(self.parent, self.points_base,
                                     (self.bw * self.bf))
         self.hole = SvgCircle(self.parent, self.dia1 / 2)
 
@@ -159,7 +159,7 @@ class Pattern1:
 
         self.needle_hole = []
         for p in self.points_needle:
-            self.needle_hole.append((SvgCircle(self.parent, dia3), p))
+            self.needle_hole.append((SvgCircle(self.parent, self.dia3 / 2), p))
 
     def mk_points(self, w1, w2, h1, h2, bw, bl):
         points = []
@@ -202,7 +202,6 @@ class Pattern1:
 
     def get_needle_points(self, points_base, d1, d2, dia):
         points = []
-
         for i, (px, py) in enumerate(points_base):
             (nx, ny) = (px, py)
             if i == 0:
@@ -232,7 +231,25 @@ class Pattern1:
             if i > 5:
                 break
 
-        return points
+        points0 = []
+        for i in range(len(points)-1):
+            (p1x, p1y) = points[i]
+            (p2x, p2y) = points[i+1]
+            points2 = []
+            if i == 0:
+                dp = p2y - p1y
+                n = int(abs(round(dp / d2)))
+                dy = dp / n
+                inkex.errormsg('(%s,%s)-(%s,%s),dp=%s,n=%s,dy=%s' % (p1x, p1y, p2x, p2y, dp, n, dy))
+                for i in range(n):
+                    px = p1x
+                    py = p1y + dy * i
+                    points0.append((px, py))
+                inkex.errormsg('points0=%s' % points0)
+            else:
+                points0.append((p1x, p1y))
+
+        return points0
 
     def draw(self, x, y):
         self.base.draw(x + self.w2 / 2, y, color='#0000FF')
@@ -241,24 +258,24 @@ class Pattern1:
                        color='#FF0000')
         for (nh, p) in self.needle_hole:
             (px, py) = p
-            nh.draw(x + px + self.w2 / 2, y + py)
+            nh.draw((x + px + self.w2 / 2), (y + py))
 
 
-class Pattern2:
-    def __init__(self, parent, pattern1, dia2):
+class Part2:
+    def __init__(self, parent, part1, dia2):
         self.parent = parent
-        self.pattern1 = pattern1
+        self.part1 = part1
         self.dia2 = dia2
 
-        self.points_base = self.mk_points_from_pattern1(self.pattern1)
+        self.points_base = self.mk_points_from_part1(self.part1)
         self.base = SvgPolygon(self.parent, self.points_base)
         self.hole = SvgCircle(self.parent, self.dia2 / 2)
-        self.points_needle = self.reverse_points(self.pattern1.points_needle)
+        self.points_needle = self.reverse_points(self.part1.points_needle)
 
         self.needle_hole = []
         for p in self.points_needle:
             self.needle_hole.append((SvgCircle(self.parent,
-                                               self.pattern1.dia3),
+                                               self.part1.dia3 / 2),
                                      p))
 
     def reverse_points(self, points):
@@ -268,24 +285,24 @@ class Pattern2:
             new_points.append((new_x, y))
         return new_points
 
-    def mk_points_from_pattern1(self, pattern1):
+    def mk_points_from_part1(self, part1):
         points = []
-        for i, (px, py) in enumerate(pattern1.points_base):
+        for i, (px, py) in enumerate(part1.points_base):
             if i > 5:
                 break
             points.append((px, py))
         return self.reverse_points(points)
 
     def draw(self, x, y):
-        self.base.draw(x + self.pattern1.w2 / 2, y,
+        self.base.draw(x + self.part1.w2 / 2, y,
                        color='#0000FF')
-        self.hole.draw(x + self.pattern1.w2 / 2,
-                       y + self.pattern1.h1 + self.pattern1.h2
-                       - self.hole.r - self.pattern1.d1,
+        self.hole.draw(x + self.part1.w2 / 2,
+                       y + self.part1.h1 + self.part1.h2
+                       - self.hole.r - self.part1.d1,
                        color='#FF0000')
         for (nh, p) in self.needle_hole:
             (px, py) = p
-            nh.draw(x + px + self.pattern1.w2 / 2, y + py)
+            nh.draw(x + px + self.part1.w2 / 2, y + py)
 
 
 class PlierCover(inkex.Effect):
@@ -362,14 +379,14 @@ class PlierCover(inkex.Effect):
         offset_x = self.DEF_OFFSET_X
         offset_y = self.DEF_OFFSET_Y
 
-        pattern1 = Pattern1(self.current_layer,
+        part1 = Part1(self.current_layer,
                             w1, w2, h1, h2, bw, bl, bf, dia1, d1, d2, dia3)
-        pattern1.draw(offset_x, offset_y)
+        part1.draw(offset_x, offset_y)
 
         offset_x += w2 + 10
 
-        pattern2 = Pattern2(self.current_layer, pattern1, dia2)
-        pattern2.draw(offset_x, offset_y)
+        part2 = Part2(self.current_layer, part1, dia2)
+        part2.draw(offset_x, offset_y)
         return
 
 
