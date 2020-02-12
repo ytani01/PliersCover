@@ -153,6 +153,8 @@ class Part1:
         self.hole = SvgCircle(self.parent, self.dia1 / 2)
 
         self.points_needle = self.get_needle_points(self.points_base,
+                                                    self.w1, self.w2,
+                                                    self.h1,
                                                     self.d1, self.d2,
                                                     self.dia3)
 
@@ -199,7 +201,7 @@ class Part1:
 
         return points
 
-    def get_needle_points(self, points_base, d1, d2, dia):
+    def get_needle_points(self, points_base, w1, w2, h1, d1, d2, dia):
         points1 = []
         for i, (px, py) in enumerate(points_base):
             (nx, ny) = (px, py)
@@ -208,20 +210,28 @@ class Part1:
                 ny -= d1
                 points1.append((nx, ny))
             if i == 1:
+                deg1 = math.degrees(math.atan((w2 - w1)/(2 * h1)))
+                deg2 = (180 - deg1) / 2
+                a1 = d1 / math.tan(math.radians(deg2))
+
                 nx += d1
-                ny += dia / 2
+                ny += a1
                 points1.append((nx, ny))
             if i == 2:
-                nx += d1 - dia / 2
+                deg1 = math.degrees(math.atan((2 * h1) / (w2 - w1)))
+                deg2 = (180 - deg1) / 2
+                a2 = d1 / math.tan(math.radians(deg2))
+
+                nx += a2
                 ny += d1
                 points1.append((nx, ny))
             if i == 3:
-                nx -= d1 - dia / 2
+                nx -= a2
                 ny += d1
                 points1.append((nx, ny))
             if i == 4:
                 nx -= d1
-                ny += dia / 2
+                ny += a1
                 points1.append((nx, ny))
             if i == 5:
                 nx -= d1
