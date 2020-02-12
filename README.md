@@ -5,7 +5,7 @@
 ラジオペンチやニッパーなどの工具のカバーの型紙を自動作成する
 Inkscape用のエクステンション(拡張機能)です。
 
-各部のサイズを入力すると、レーザーカッター用の型紙を自動作成します。
+各部分のサイズを入力すると、レーザーカッター用の型紙を自動作成します。
 ライブビュー機能を利用すると、画面上で形を確認しながらサイズ調整できます。
 
 ## 1. インストール
@@ -16,7 +16,35 @@ Inkscape用のエクステンション(拡張機能)です。
 
 => [Inkscape 公式サイト](https://inkscape.org/ja/)
 
-### 1.1 ファイルのコピー
+
+### 1.1 ダウンロード
+
+サイトのURL
+
+```
+https://github.com/ytani01/PlierCover/
+```
+
+
+#### 1.1.1 ZIPファイルのダウンロード
+
+![](docs/github1.png)
+
+
+#### 1.1.2 Gitリポジトリのクローン(clone)
+
+```bash
+$ git clone https://github.com/ytani01/PlierCover.git
+```
+
+* githubにsshの設定をしている場合
+
+```bash
+$ git clone git@github.com:ytani01/PlierCover.git
+```
+
+
+### 1.2 ファイルのコピー
 
 以下の２つのファイルを所定のフォルダにコピーする。
 
@@ -25,7 +53,7 @@ Inkscape用のエクステンション(拡張機能)です。
 * plier_cover.py
 
 
-#### 1.1.1 Linux
+#### 1.2.1 Linux
 
 コピー先ディレクトリ(フォルダ)
 * ユーザー毎
@@ -35,9 +63,6 @@ Inkscape用のエクステンション(拡張機能)です。
 
 ``setup.sh`` で自動的に上記ディレクトにコピーすることができます。
 ```bash
-$ cd
-$ git clone ...
-$ cd PlierCover
 $ ./setup-linux.sh
 ```
 
@@ -47,12 +72,12 @@ $ ./setup-linux.sh
 ```
 
 
-#### 1.1.2 Mac
+#### 1.2.2 Mac
 
 linuxと同じ？？
 
 
-#### 1.1.3 Windows
+#### 1.2.3 Windows
 
 コピー先フォルダ
 
@@ -97,6 +122,7 @@ C:\Program Files\Inkscape\share\extensions)
 * ``縫いしろ``や針穴のパラメータを微調整調整して、
 針穴がきれいに並ぶようにしましょう。
 ![](docs/needle1.gif)
+
 
 
 ## A. Memo
