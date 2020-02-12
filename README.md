@@ -26,12 +26,14 @@ https://github.com/ytani01/PlierCover/
 ```
 
 
-#### 1.1.1 ZIPファイルのダウンロード
+#### 1.1.1 ZIPファイルをダウンロードして展開する方法
 
 ![](docs/github1.png)
 
 
-#### 1.1.2 Gitリポジトリのクローン(clone)
+#### 1.1.2 Gitリポジトリをクローン(clone)する方法
+
+* 通常のやり方
 
 ```bash
 $ git clone https://github.com/ytani01/PlierCover.git
