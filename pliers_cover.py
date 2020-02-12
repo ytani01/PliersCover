@@ -46,34 +46,21 @@ class SvgCircle(SvgObj):
 
     def __init__(self, parent, r):
         super(SvgCircle, self).__init__(parent)
-
         self.r = r
-
         self.type = 'circle'
 
     def draw(self, x, y,
              color=DEF_COLOR,
              stroke_width=DEF_STROKE_WIDTH,
              stroke_dasharray=DEF_STROKE_DASHARRAY):
-
         self.attr['cx'] = str(x)
         self.attr['cy'] = str(y)
         self.attr['r'] = str(self.r)
 
-        return super(SvgCircle, self).draw(x, y, color,
-                                           stroke_width, stroke_dasharray)
-
-
-class SvgButtonHole1(SvgCircle):
-    def __init__(self, parent, dia):
-        self.r = dia / 2
-        super(SvgButtonHole1, self).__init__(parent, self.r)
-
-
-class SvgButtonHole2(SvgCircle):
-    def __init__(self, parent, dia):
-        self.r = dia / 2
-        super(SvgButtonHole2, self).__init__(parent, self.r)
+        return super(SvgCircle, self).draw(x, y,
+                                           color,
+                                           stroke_width,
+                                           stroke_dasharray)
 
 
 class SvgPath(SvgObj):
@@ -83,38 +70,29 @@ class SvgPath(SvgObj):
 
     def __init__(self, parent, points):
         super(SvgPath, self).__init__(parent)
-
         self.points = points
-
         self.type = 'path'
 
     def mk_svg_d(self, x, y, points):
         '''
         to be override
 
-        This is sample code of SvgLine
+        This is sample code.
         '''
         svg_d = ''
-
         for i, (px, py) in enumerate(points):
             (x1, y1) = (px + x, py + y)
             if i == 0:
                 svg_d = 'M %f,%f' % (x1, y1)
             else:
                 svg_d += ' L %f,%f' % (x1, y1)
-
         return svg_d
 
     def draw(self, x, y,
              color=DEF_COLOR, stroke_width=DEF_STROKE_WIDTH,
              stroke_dasharray=DEF_STROKE_DASHARRAY):
-
         svg_d = self.mk_svg_d(x, y, self.points)
-
         self.attr['d'] = svg_d
-
-        # inkex.errormsg('svg_d=%s' % (svg_d))
-
         return super(SvgPath, self).draw(x, y, color,
                                          stroke_width, stroke_dasharray)
 
@@ -134,7 +112,6 @@ class SvgPolygon(SvgPath):
 class SvgPattern1Base(SvgPath):
     def __init__(self, parent, points, bw_bf):
         super(SvgPattern1Base, self).__init__(parent, points)
-
         self.bw_bf = bw_bf
 
     def mk_svg_d(self, x, y, points, bw_bf=1):
@@ -275,9 +252,7 @@ class Pattern2:
 
         self.points_base = self.mk_points_from_pattern1(self.pattern1)
         self.base = SvgPolygon(self.parent, self.points_base)
-
         self.hole = SvgCircle(self.parent, self.dia2 / 2)
-
         self.points_needle = self.reverse_points(self.pattern1.points_needle)
 
         self.needle_hole = []
@@ -288,32 +263,26 @@ class Pattern2:
 
     def reverse_points(self, points):
         new_points = []
-
         for (x, y) in points:
             new_x = -x
             new_points.append((new_x, y))
-
         return new_points
 
     def mk_points_from_pattern1(self, pattern1):
         points = []
-
         for i, (px, py) in enumerate(pattern1.points_base):
             if i > 5:
                 break
             points.append((px, py))
-
         return self.reverse_points(points)
 
     def draw(self, x, y):
         self.base.draw(x + self.pattern1.w2 / 2, y,
                        color='#0000FF')
-
         self.hole.draw(x + self.pattern1.w2 / 2,
                        y + self.pattern1.h1 + self.pattern1.h2
                        - self.hole.r - self.pattern1.d1,
                        color='#FF0000')
-
         for (nh, p) in self.needle_hole:
             (px, py) = p
             nh.draw(x + px + self.pattern1.w2 / 2, y + py)
