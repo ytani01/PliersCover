@@ -39,7 +39,7 @@ https://github.com/ytani01/PlierCover/
 $ git clone https://github.com/ytani01/PlierCover.git
 ```
 
-* githubにsshの設定をしている場合
+* githubにsshの設定をしている場合、以下の方法でも可
 
 ```bash
 $ git clone git@github.com:ytani01/PlierCover.git
