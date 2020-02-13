@@ -105,7 +105,7 @@ C:\Program Files\Inkscape\share\extensions)
 
 [拡張(extensions, エクステンション)]-[ytani]-[工具カバー] 
 
-![menu](docs/inkscape1.png)
+![menu](docs/sample1.png)
 
 * ダイヤログにサイズを入力
 
