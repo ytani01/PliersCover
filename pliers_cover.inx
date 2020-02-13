@@ -6,30 +6,29 @@
 
   <param name="title" type="description">
     工具カバー型紙
-    (単位：mm)
   </param>
   <param name="title_base" type="description">
     ベース
   </param>
-  <param name="w1" type="float" min="5" max="200" _gui-text="幅1(w1)">
+  <param name="w1" type="float" min="5" max="200" _gui-text="先端の幅(w1)[mm]">
   20</param>
-  <param name="w2" type="float" min="10" max="200" _gui-text="幅2(w2)">
+  <param name="w2" type="float" min="10" max="200" _gui-text="最大幅(w2)[mm]">
   40</param>
-  <param name="h1" type="float" min="10" max="200" _gui-text="長さ1(h1)">
+  <param name="h1" type="float" min="10" max="200" _gui-text="先端部の長さ(h1)[mm]">
   40</param>
-  <param name="h2" type="float" min="10" max="200" _gui-text="長さ2(h2)">
+  <param name="h2" type="float" min="10" max="200" _gui-text="長さ(h2)[mm]">
   20</param>
-  <param name="dia1" type="float" min="5" max="50" _gui-text="留め具メス径(dia1)">
+  <param name="dia1" type="float" min="5" max="50" _gui-text="留め具メス径(dia1)[mm]">
   10</param>
-  <param name="dia2" type="float" min="5" max="50" _gui-text="留め具オス径(dia2)">
+  <param name="dia2" type="float" min="5" max="50" _gui-text="留め具オス径(dia2)[mm]">
   10</param>
 
   <param name="title_band" type="description" xml:space="preserve">
     バンド
   </param>
-  <param name="bw" type="float" min="5" max="30" _gui-text="幅(bw)">
+  <param name="bw" type="float" min="5" max="30" _gui-text="幅(bw)[mm]">
   15</param>
-  <param name="bl" type="float" min="20" max="100" _gui-text="長さ(bl)">
+  <param name="bl" type="float" min="20" max="100" _gui-text="長さ(bl)[mm]">
   30</param>
   <param name="bf" type="float" min="0.1" max="1" _gui-text="曲線係数(bf)">
   0.7</param>
@@ -37,11 +36,11 @@
   <param name="title_nuishiro" type="description" xml:space="preserve">
     縫いしろ
   </param>
-  <param name="d1" type="float" min="1" max="5" _gui-text="縫いしろ(d1)">
+  <param name="d1" type="float" min="1" max="5" _gui-text="縫いしろ(d1)[mm]">
   3</param>
-  <param name="d2" type="float" min="1" max="10" _gui-text="針穴間隔(d2)">
+  <param name="d2" type="float" min="1" max="10" _gui-text="針穴間隔(d2)[mm]">
   3</param>
-  <param name="dia3" type="float" min="0.5" max="4" _gui-text="針穴経(dia3)">
+  <param name="dia3" type="float" min="0.5" max="4" _gui-text="針穴径(dia3)[mm]">
   1</param>
 
   <effect needs-live-preview="true">
