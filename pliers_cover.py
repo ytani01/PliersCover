@@ -168,7 +168,7 @@ class Part1:
 
         self.points_base = self.mk_points(w1, w2, h1, h2, bw, bl)
         self.base = SvgPart1Base(self.parent, self.points_base,
-                                    (self.bw * self.bf))
+                                 (self.bw * self.bf))
         self.hole = SvgCircle(self.parent, self.dia1 / 2)
 
         self.points_needle = self.get_needle_points(self.points_base,
@@ -273,14 +273,14 @@ class Part1:
         (p1x, p1y) = p1
         (p2x, p2y) = p2
         return math.sqrt((p2x - p1x) ** 2 + (p2y - p1y) ** 2)
-                    
+
     def split_points(self, p1, p2, n):
         if n == 0:
             return [p1]
         (p1x, p1y) = p1
         (p2x, p2y) = p2
-        (dx, dy) = ((p2x - p1x) / n, (p2y -p1y) / n)
-        
+        (dx, dy) = ((p2x - p1x) / n, (p2y - p1y) / n)
+
         p = []
         for i in range(n):
             p.append(((p1x + dx * i), (p1y + dy * i)))
@@ -415,13 +415,14 @@ class PlierCover(inkex.Effect):
         offset_y = self.DEF_OFFSET_Y
 
         part1 = Part1(self.current_layer,
-                            w1, w2, h1, h2, bw, bl, bf, dia1, d1, d2, dia3)
+                      w1, w2, h1, h2, bw, bl, bf, dia1, d1, d2, dia3)
         part1.draw(offset_x, offset_y)
 
         offset_x += w2 + 10
 
         part2 = Part2(self.current_layer, part1, dia2)
         part2.draw(offset_x, offset_y)
+
         return
 
 

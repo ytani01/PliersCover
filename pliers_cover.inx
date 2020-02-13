@@ -4,45 +4,60 @@
   <id>jp.tanibayashi.yoichi.ytani.pliers_cover</id>
   <dependency type="executable" location="extensions">pliers_cover.py</dependency>
 
-  <param name="title" type="description">
-    工具カバー型紙
-  </param>
+  <param name="title" type="description" xml:space="preserve">
+    工具カバー図面</param>
+
   <param name="title_base" type="description">
-    ベース
-  </param>
-  <param name="w1" type="float" min="5" max="200" _gui-text="先端の幅(w1)[mm]">
+  ---[ ベース部分 ]---</param>
+  <param name="w1" type="float" min="5" max="200"
+	 _gui-text="先端の幅(w1)[mm]">
   20</param>
-  <param name="w2" type="float" min="10" max="200" _gui-text="最大幅(w2)[mm]">
+  <param name="w2" type="float" min="10" max="200"
+	 _gui-text="最大幅(w2)[mm]">
   40</param>
-  <param name="h1" type="float" min="10" max="200" _gui-text="先端部の長さ(h1)[mm]">
+  <param name="h1" type="float" min="10" max="200"
+	 _gui-text="先端部の長さ(h1)[mm]">
   40</param>
-  <param name="h2" type="float" min="10" max="200" _gui-text="長さ(h2)[mm]">
+  <param name="h2" type="float" min="10" max="200"
+	 _gui-text="先端以外の長さ(h2)[mm]">
   20</param>
-  <param name="dia1" type="float" min="5" max="50" _gui-text="留め具メス径(dia1)[mm]">
+
+  <param name="title_base" type="description">
+  ---[ バンド部分 ]---</param>
+  <param name="bw" type="float" min="5" max="30"
+	 _gui-text="バンドの幅(bw)[mm]">
+  15</param>
+  <param name="bl" type="float" min="20" max="100"
+	 _gui-text="バンドの長さ(bl)[mm]">
+  30</param>
+
+  <param name="title_base" type="description">
+  ---[ 留め具 ]---</param>
+  <param name="dia1" type="float" min="5" max="50"
+	 _gui-text="留め具メス径(dia1)[mm]">
   10</param>
-  <param name="dia2" type="float" min="5" max="50" _gui-text="留め具オス径(dia2)[mm]">
+  <param name="dia2" type="float" min="5" max="50"
+	 _gui-text="留め具オス径(dia2)[mm]">
   10</param>
 
-  <param name="title_band" type="description" xml:space="preserve">
-    バンド
-  </param>
-  <param name="bw" type="float" min="5" max="30" _gui-text="幅(bw)[mm]">
-  15</param>
-  <param name="bl" type="float" min="20" max="100" _gui-text="長さ(bl)[mm]">
-  30</param>
-  <param name="bf" type="float" min="0.1" max="1" _gui-text="曲線係数(bf)">
-  0.7</param>
-  
-  <param name="title_nuishiro" type="description" xml:space="preserve">
-    縫いしろ
-  </param>
-  <param name="d1" type="float" min="1" max="5" _gui-text="縫いしろ(d1)[mm]">
+  <param name="title_nuishiro" type="description">
+  ---[ 縫いしろ ]---</param>
+  <param name="d1" type="float" min="1" max="5"
+	 _gui-text="縫いしろ(d1)[mm]">
   3</param>
-  <param name="d2" type="float" min="1" max="10" _gui-text="針穴間隔(d2)[mm]">
+  <param name="d2" type="float" min="1" max="10"
+	 _gui-text="針穴間隔(d2)[mm]">
   3</param>
-  <param name="dia3" type="float" min="0.5" max="4" _gui-text="針穴径(dia3)[mm]">
+  <param name="dia3" type="float" min="0.5" max="4"
+	 _gui-text="針穴径(dia3)[mm]">
   1</param>
 
+  <param name="title_base" type="description">
+  ---[ 留め具 ]---</param>
+  <param name="bf" type="float" min="0.1" max="1"
+	 _gui-text="曲線係数(bf)">
+  0.7</param>
+  
   <effect needs-live-preview="true">
     <object-type>all</object-type>
     <effects-menu>
