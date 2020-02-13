@@ -9,34 +9,34 @@
 
   <param name="title_base" type="description">
   ---[ ベース部分 ]---</param>
-  <param name="w1" type="float" min="5" max="200"
+  <param name="w1" type="float" min="1" max="200"
 	 _gui-text="先端の幅(w1)[mm]">
   20</param>
-  <param name="w2" type="float" min="10" max="200"
+  <param name="w2" type="float" min="2" max="200"
 	 _gui-text="最大幅(w2)[mm]">
   40</param>
-  <param name="h1" type="float" min="10" max="200"
+  <param name="h1" type="float" min="1" max="200"
 	 _gui-text="先端部の長さ(h1)[mm]">
   40</param>
-  <param name="h2" type="float" min="10" max="200"
+  <param name="h2" type="float" min="1" max="200"
 	 _gui-text="先端以外の長さ(h2)[mm]">
   20</param>
 
   <param name="title_base" type="description">
   ---[ バンド部分 ]---</param>
-  <param name="bw" type="float" min="5" max="30"
+  <param name="bw" type="float" min="1" max="30"
 	 _gui-text="バンドの幅(bw)[mm]">
   15</param>
-  <param name="bl" type="float" min="20" max="100"
+  <param name="bl" type="float" min="1" max="100"
 	 _gui-text="バンドの長さ(bl)[mm]">
   30</param>
 
   <param name="title_base" type="description">
   ---[ 留め具 ]---</param>
-  <param name="dia1" type="float" min="5" max="50"
+  <param name="dia1" type="float" min="1" max="50"
 	 _gui-text="留め具メス径(dia1)[mm]">
   10</param>
-  <param name="dia2" type="float" min="5" max="50"
+  <param name="dia2" type="float" min="1" max="50"
 	 _gui-text="留め具オス径(dia2)[mm]">
   10</param>
 

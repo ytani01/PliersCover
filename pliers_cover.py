@@ -14,27 +14,34 @@ inkex.localize()
 
 
 class Point(object):
-    def __init__(self, x=0, y=0):
+    '''
+    (x, y)座標と方向(rad)を持つ点
+
+    rad: 方向(真上: 0, 右: math.pi / 2, ..)
+    '''
+    def __init__(self, x, y, rad=0):
         self.x = x
         self.y = y
+        self.rad = rad
 
-    def xy(self):
-        return (self.x, self.y)
+    def get(self):
+        return (self.x, self.y, self.rad)
 
-    def set_xy(self, x, y):
+    def set(self, x, y, rad=0):
         self.x = x
         self.y = y
+        self.rad = rad
 
-
-class NeedlePoint(Point):
-    def __init__(self, x=0, y=0, rad=0):
-        self.rad = 0
-        super(NeedlePoint, self).__init__(x, y)
+    def rotate(self, rad=0):
+        new_x = math.cos(rad) * self.x - math.sin(rad) * self.y
+        new_y = math.sin(rad) * self.x + math.cos(rad) * self.y
+        self.x = new_x
+        self.y = new_y
 
 
 class SvgObj(object):
     DEF_COLOR = '#00FF00'
-    DEF_STROKE_WIDTH = 0.3
+    DEF_STROKE_WIDTH = 0.2
     DEF_STROKE_DASHARRAY = 'none'
 
     def __init__(self, parent):
@@ -42,7 +49,7 @@ class SvgObj(object):
         self.type = None
         self.attr = {}
 
-    def draw(self, x, y,
+    def draw(self, point,
              color=DEF_COLOR,
              stroke_width=DEF_STROKE_WIDTH,
              stroke_dasharray=DEF_STROKE_DASHARRAY):
@@ -59,7 +66,7 @@ class SvgObj(object):
 
 class SvgCircle(SvgObj):
     DEF_COLOR = '#FF0000'
-    DEF_STROKE_WIDTH = 0.3
+    DEF_STROKE_WIDTH = 0.2
     DEF_STROKE_DASHARRAY = 'none'
 
     def __init__(self, parent, r):
@@ -67,15 +74,15 @@ class SvgCircle(SvgObj):
         self.r = r
         self.type = 'circle'
 
-    def draw(self, x, y,
+    def draw(self, point,
              color=DEF_COLOR,
              stroke_width=DEF_STROKE_WIDTH,
              stroke_dasharray=DEF_STROKE_DASHARRAY):
-        self.attr['cx'] = str(x)
-        self.attr['cy'] = str(y)
+        self.attr['cx'] = str(point.x)
+        self.attr['cy'] = str(point.y)
         self.attr['r'] = str(self.r)
 
-        return super(SvgCircle, self).draw(x, y,
+        return super(SvgCircle, self).draw(point,
                                            color,
                                            stroke_width,
                                            stroke_dasharray)
@@ -83,7 +90,7 @@ class SvgCircle(SvgObj):
 
 class SvgPath(SvgObj):
     DEF_COLOR = '#0000FF'
-    DEF_STROKE_WIDTH = 0.3
+    DEF_STROKE_WIDTH = 0.2
     DEF_STROKE_DASHARRAY = 'none'
 
     def __init__(self, parent, points):
@@ -91,27 +98,34 @@ class SvgPath(SvgObj):
         self.points = points
         self.type = 'path'
 
-    def mk_svg_d(self, x, y, points):
+    def mk_svg_d(self, origin_point, points):
         '''
         to be override
 
         This is sample code.
         '''
         svg_d = ''
-        for i, (px, py) in enumerate(points):
-            (x1, y1) = (px + x, py + y)
+        for i, p in enumerate(points):
+            (x1, y1) = (p.x + origin_point.x, p.y + origin_point.y)
             if i == 0:
                 svg_d = 'M %f,%f' % (x1, y1)
             else:
                 svg_d += ' L %f,%f' % (x1, y1)
         return svg_d
 
-    def draw(self, x, y,
+    def rotate(self, rad=0):
+        for p in self.points:
+            p.rotate(rad)
+
+    def draw(self, origin,
              color=DEF_COLOR, stroke_width=DEF_STROKE_WIDTH,
              stroke_dasharray=DEF_STROKE_DASHARRAY):
-        svg_d = self.mk_svg_d(x, y, self.points)
+
+        self.rotate(origin.rad)
+
+        svg_d = self.mk_svg_d(origin, self.points)
         self.attr['d'] = svg_d
-        return super(SvgPath, self).draw(x, y, color,
+        return super(SvgPath, self).draw(origin, color,
                                          stroke_width, stroke_dasharray)
 
 
@@ -121,8 +135,8 @@ class SvgLine(SvgPath):
 
 
 class SvgPolygon(SvgPath):
-    def mk_svg_d(self, x, y, points):
-        svg_d = super(SvgPolygon, self).mk_svg_d(x, y, points)
+    def mk_svg_d(self, origin, points):
+        svg_d = super(SvgPolygon, self).mk_svg_d(origin, points)
         svg_d += ' Z'
         return svg_d
 
@@ -132,9 +146,9 @@ class SvgPart1Base(SvgPath):
         super(SvgPart1Base, self).__init__(parent, points)
         self.bw_bf = bw_bf
 
-    def mk_svg_d(self, x, y, points, bw_bf=1):
-        for i, (px, py) in enumerate(points):
-            (x1, y1) = (px + x, py + y)
+    def mk_svg_d(self, origin, points, bw_bf=1):
+        for i, p in enumerate(points):
+            (x1, y1) = (p.x + origin.x, p.y + origin.y)
             if i == 0:
                 d = 'M %f,%f' % (x1, y1)
             elif i == 7:
@@ -148,6 +162,32 @@ class SvgPart1Base(SvgPath):
         d += ' Z'
 
         return d
+
+
+class SvgNeedleHole(SvgPolygon):
+    def __init__(self, parent, w=2, hf=0.7, rf=0.2):
+        '''
+        w: width
+        hf: height factor
+        rf: rotation factor
+        '''
+        self.w = w
+        self.hf = hf
+        self.rf = rf
+        self.gen_points(self.w, self.hf, self.rf)
+        super(SvgNeedleHole, self).__init__(parent, self.points)
+
+    def gen_points(self, w, hf, rf):
+        self.points = []
+        self.points.append(Point(-w / 2,  w * hf * rf))
+        self.points.append(Point( w / 2,  w * hf * (1 - rf)))
+        self.points.append(Point( w / 2, -w * hf * rf))
+        self.points.append(Point(-w / 2, -w * hf * (1 - rf)))
+
+    def reverse(self):
+        for i in range(len(self.points)):
+            self.points[i].x = -self.points[i].x
+        return self
 
 
 class Part1:
@@ -179,7 +219,7 @@ class Part1:
 
         self.needle_hole = []
         for p in self.points_needle:
-            self.needle_hole.append((SvgCircle(self.parent, self.dia3 / 2), p))
+            self.needle_hole.append((SvgNeedleHole(self.parent, self.dia3), p))
 
     def mk_points(self, w1, w2, h1, h2, bw, bl):
         points = []
@@ -187,113 +227,118 @@ class Part1:
         (x0, y0) = (-(w2 / 2), 0)
 
         (x, y) = (x0, y0 + h1 + h2)
-        points.append((x, y))
+        points.append(Point(x, y))
 
         y = y0 + h1
-        points.append((x, y))
+        points.append(Point(x, y))
 
         x = -(w1 / 2)
         y = y0
-        points.append((x, y))
+        points.append(Point(x, y))
 
         x = w1 / 2
-        points.append((x, y))
+        points.append(Point(x, y))
 
         x = w2 / 2
         y += h1
-        points.append((x, y))
+        points.append(Point(x, y))
 
         y += h2
-        points.append((x, y))
+        points.append(Point(x, y))
 
         x = bw / 2
-        points.append((x, y))
+        points.append(Point(x, y))
 
         y += bl - bw / 2
-        points.append((x, y))
+        points.append(Point(x, y))
 
         x = -(bw / 2)
-        points.append((x, y))
+        points.append(Point(x, y))
 
         y = y0 + h1 + h2
-        points.append((x, y))
+        points.append(Point(x, y))
 
         return points
 
     def get_needle_points(self, points_base, w1, w2, h1, d1, d2, dia):
+        rad1 = math.atan((w2 - w1) / (2 * h1))
+        rad1a = (math.pi - rad1) / 2
+        a1 = d1 / math.tan(rad1a)
+
+        rad2 = (math.pi / 2) - rad1
+        rad2a = (math.pi - rad2) / 2
+        a2 = d1 / math.tan(rad2a)
+
+        #
+        # 頂点
+        #
         points1 = []
-        for i, (px, py) in enumerate(points_base):
-            (nx, ny) = (px, py)
+        for i, p in enumerate(points_base):
+            (nx, ny) = (p.x, p.y)
             if i == 0:
                 nx += d1
-                ny -= d1
-                points1.append((nx, ny))
+                ny -= d1 * 1.5
+                points1.append(Point(nx, ny, 0))
             if i == 1:
-                rad1 = math.atan((w2 - w1)/(2 * h1))
-                rad2 = (math.pi - rad1) / 2
-                a1 = d1 / math.tan(rad2)
-
                 nx += d1
                 ny += a1
-                points1.append((nx, ny))
+                points1.append(Point(nx, ny, rad1))
             if i == 2:
-                rad1 = math.atan((2 * h1) / (w2 - w1))
-                rad2 = (math.pi - rad1) / 2
-                a2 = d1 / math.tan(rad2)
-
                 nx += a2
                 ny += d1
-                points1.append((nx, ny))
+                points1.append(Point(nx, ny, math.pi / 2))
             if i == 3:
                 nx -= a2
                 ny += d1
-                points1.append((nx, ny))
+                points1.append(Point(nx, ny, (math.pi / 2) + rad2))
             if i == 4:
                 nx -= d1
                 ny += a1
-                points1.append((nx, ny))
+                points1.append(Point(nx, ny, math.pi))
             if i == 5:
                 nx -= d1
-                ny -= d1
-                points1.append((nx, ny))
+                ny -= d1 * 1.5
+                points1.append(Point(nx, ny, math.pi))
             if i > 5:
                 break
 
+        #
+        # 頂点を補完する点
+        #
         points2 = []
         for i in range(len(points1)-1):
             d = self.distance(points1[i], points1[i+1])
             n = int(abs(round(d / d2)))
             for p in self.split_points(points1[i], points1[i+1], n):
                 points2.append(p)
-        points2.append(points1[-1])
+        points2.insert(0, points1[0])
 
         return points2
 
     def distance(self, p1, p2):
-        (p1x, p1y) = p1
-        (p2x, p2y) = p2
-        return math.sqrt((p2x - p1x) ** 2 + (p2y - p1y) ** 2)
+        return math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2)
 
     def split_points(self, p1, p2, n):
         if n == 0:
             return [p1]
-        (p1x, p1y) = p1
-        (p2x, p2y) = p2
-        (dx, dy) = ((p2x - p1x) / n, (p2y - p1y) / n)
+        (dx, dy) = ((p2.x - p1.x) / n, (p2.y - p1.y) / n)
 
         p = []
         for i in range(n):
-            p.append(((p1x + dx * i), (p1y + dy * i)))
+            p.append(Point(p1.x + dx * (i + 1), p1.y + dy * (i + 1), p1.rad))
+
+        p[-1].rad = (p1.rad + p2.rad) / 2
         return p
 
-    def draw(self, x, y):
-        self.base.draw(x + self.w2 / 2, y, color='#0000FF')
-        self.hole.draw(x + self.w2 / 2,
-                       y + self.h1 + self.h2 + self.bl - self.bw / 2,
+    def draw(self, point):
+        self.base.draw(Point(point.x + self.w2 / 2, point.y), color='#0000FF')
+        self.hole.draw(Point(point.x + self.w2 / 2,
+                             point.y + self.h1 + self.h2 + self.bl
+                             - self.bw / 2),
                        color='#FF0000')
         for (nh, p) in self.needle_hole:
-            (px, py) = p
-            nh.draw((x + px + self.w2 / 2), (y + py))
+            nh.draw(Point(point.x + p.x + self.w2 / 2, point.y + p.y, p.rad),
+                    color='#FF0000')
 
 
 class Part2:
@@ -309,35 +354,34 @@ class Part2:
 
         self.needle_hole = []
         for p in self.points_needle:
-            self.needle_hole.append((SvgCircle(self.parent,
-                                               self.part1.dia3 / 2),
-                                     p))
+            nh = SvgNeedleHole(self.parent, self.part1.dia3).reverse()
+            self.needle_hole.append((nh, p))
 
     def reverse_points(self, points):
         new_points = []
-        for (x, y) in points:
-            new_x = -x
-            new_points.append((new_x, y))
+        for p in points:
+            new_points.append(Point(-p.x, p.y, -p.rad))
         return new_points
 
     def mk_points_from_part1(self, part1):
         points = []
-        for i, (px, py) in enumerate(part1.points_base):
+        for i, p in enumerate(part1.points_base):
             if i > 5:
                 break
-            points.append((px, py))
+            points.append(Point(p.x, p.y))
         return self.reverse_points(points)
 
-    def draw(self, x, y):
-        self.base.draw(x + self.part1.w2 / 2, y,
+    def draw(self, origin):
+        self.base.draw(Point(origin.x + self.part1.w2 / 2, origin.y),
                        color='#0000FF')
-        self.hole.draw(x + self.part1.w2 / 2,
-                       y + self.part1.h1 + self.part1.h2
-                       - self.hole.r - self.part1.d1,
+        self.hole.draw(Point(origin.x + self.part1.w2 / 2,
+                             origin.y + self.part1.h1 + self.part1.h2
+                             - self.hole.r - self.part1.d1),
                        color='#FF0000')
         for (nh, p) in self.needle_hole:
-            (px, py) = p
-            nh.draw(x + px + self.part1.w2 / 2, y + py)
+            nh.draw(Point(origin.x + p.x + self.part1.w2 / 2, origin.y + p.y,
+                          p.rad),
+                    color='#FF0000')
 
 
 class PlierCover(inkex.Effect):
@@ -411,17 +455,16 @@ class PlierCover(inkex.Effect):
         #
         # draw
         #
-        offset_x = self.DEF_OFFSET_X
-        offset_y = self.DEF_OFFSET_Y
+        origin_point = Point(self.DEF_OFFSET_X, self.DEF_OFFSET_Y)
 
         part1 = Part1(self.current_layer,
                       w1, w2, h1, h2, bw, bl, bf, dia1, d1, d2, dia3)
-        part1.draw(offset_x, offset_y)
+        part1.draw(origin_point)
 
-        offset_x += w2 + 10
+        origin_point.x += w2 + 10
 
         part2 = Part2(self.current_layer, part1, dia2)
-        part2.draw(offset_x, offset_y)
+        part2.draw(origin_point)
 
         return
 
