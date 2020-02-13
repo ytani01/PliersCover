@@ -26,7 +26,7 @@ Inkscapeなので、もちろん、自動生成したあとに、追加・修正
 
 サイトのURL
 
-https://github.com/ytani01/PlierCover/
+https://github.com/ytani01/PliersCover/
 
 
 #### 1.1.1 ZIPファイルをダウンロードして展開する方法
