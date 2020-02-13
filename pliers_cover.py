@@ -13,6 +13,25 @@ $ sudo apt install python-lxml
 inkex.localize()
 
 
+class Point(object):
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+
+    def xy(self):
+        return (self.x, self.y)
+
+    def set_xy(self, x, y):
+        self.x = x
+        self.y = y
+
+
+class NeedlePoint(Point):
+    def __init__(self, x=0, y=0, rad=0):
+        self.rad = 0
+        super(NeedlePoint, self).__init__(x, y)
+
+
 class SvgObj(object):
     DEF_COLOR = '#00FF00'
     DEF_STROKE_WIDTH = 0.3
@@ -210,17 +229,17 @@ class Part1:
                 ny -= d1
                 points1.append((nx, ny))
             if i == 1:
-                deg1 = math.degrees(math.atan((w2 - w1)/(2 * h1)))
-                deg2 = (180 - deg1) / 2
-                a1 = d1 / math.tan(math.radians(deg2))
+                rad1 = math.atan((w2 - w1)/(2 * h1))
+                rad2 = (math.pi - rad1) / 2
+                a1 = d1 / math.tan(rad2)
 
                 nx += d1
                 ny += a1
                 points1.append((nx, ny))
             if i == 2:
-                deg1 = math.degrees(math.atan((2 * h1) / (w2 - w1)))
-                deg2 = (180 - deg1) / 2
-                a2 = d1 / math.tan(math.radians(deg2))
+                rad1 = math.atan((2 * h1) / (w2 - w1))
+                rad2 = (math.pi - rad1) / 2
+                a2 = d1 / math.tan(rad2)
 
                 nx += a2
                 ny += d1
