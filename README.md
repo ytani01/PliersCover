@@ -26,6 +26,7 @@ Inkscapeなので、
 ### 1.0 Inkscape
 
 ``Inkscape`` の拡張機能なので、まずは、``Inkscape`` をインストールして下さい。
+Inkscapeのインストール方法については、下記公式サイトをご参照ください。
 
 => [Inkscape 公式サイト](https://inkscape.org/ja/)
 
@@ -66,6 +67,8 @@ $ git clone git@github.com:ytani01/PlierCover.git
 コピーするファイル
 * plier_cover.inx
 * plier_cover.py
+
+OSにあったやり方でコピーしてください。
 
 
 #### 1.2.1 Linux
