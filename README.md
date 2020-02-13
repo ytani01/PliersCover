@@ -105,11 +105,11 @@ C:\Program Files\Inkscape\share\extensions)
 
 [拡張(extensions, エクステンション)]-[ytani]-[工具カバー] 
 
-![menu](docs/sample1.png)
+![menu](docs/inkscape1.png)
 
 * ダイヤログにサイズを入力
 
-![Inkscape extension: 工具カバー](docs/inkscape2.png)
+![Inkscape extension: 工具カバー](docs/sample1.png)
 
 * ``[ライブビュー]`` をチェックすると、画面で確認しながらサイズを調整できます。
 
