@@ -36,7 +36,7 @@ Inkscape用のエクステンション(拡張機能)です。
 
 サイトのURL
 
-https://github.com/ytani01/PliersCover/
+[https://github.com/ytani01/PliersCover/](https://github.com/ytani01/PliersCover/)
 
 ZIP形式のファイルをダウンロードして展開するか、
 ``git``に慣れている方は、慣れた方法でリポジトリをクローンしてください。
