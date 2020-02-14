@@ -447,9 +447,6 @@ class PlierCover(inkex.Effect):
                                      dest="needle_tf", help="")
 
     def effect(self):
-        """
-        main
-        """
         # parameters
         w1 = self.options.w1
         w2 = self.options.w2
