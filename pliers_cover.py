@@ -158,7 +158,7 @@ class SvgPolygon(SvgPath):
         return svg_d
 
 
-class SvgPart1Base(SvgPath):
+class SvgPart1Base(SvgPolygon):
     def __init__(self, parent, points, bw_bf):
         super(SvgPart1Base, self).__init__(parent, points)
         self.bw_bf = bw_bf
@@ -367,12 +367,10 @@ class Part2(object):
         self.dia2 = dia2
 
 
-        inkex.errormsg('part1.points_base=%s' % (self.part1.points_base))
         self.points_base = []
         for p in self.part1.points_base:
             p.mirror()
             self.points_base.append(p)
-        inkex.errormsg('points_base=%s' % (self.points_base))
 
         self.svg_base = SvgPolygon(self.parent, self.points_base)
 
