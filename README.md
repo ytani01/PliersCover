@@ -1,3 +1,5 @@
+![工具の写真と重ねる](docs/sample2.png)
+
 # 工具カバーの図面を自動作成 (Inkscape extension)
 
 ## 概要
