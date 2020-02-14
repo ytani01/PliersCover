@@ -13,23 +13,23 @@ $ sudo apt install python-lxml
 inkex.localize()
 
 
-class Point(object):
+class Coordinate(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def distance(self, c):
+        return math.sqrt((c.x - self.x) ** 2 + (c.y - self.y) ** 2)
+    
+
+class Point(Coordinate):
     '''
     (x, y)座標と方向(rad)を持つ点
 
     rad: 方向(真上: 0, 右: math.pi / 2, ..)
     '''
     def __init__(self, x, y, rad=0):
-        self.x = x
-        self.y = y
-        self.rad = rad
-
-    def get(self):
-        return (self.x, self.y, self.rad)
-
-    def set(self, x, y, rad=0):
-        self.x = x
-        self.y = y
+        super(Point, self).__init__(x, y)
         self.rad = rad
 
     def rotate(self, rad=0):
@@ -49,8 +49,7 @@ class SvgObj(object):
         self.type = None
         self.attr = {}
 
-    def draw(self, point,
-             color=DEF_COLOR,
+    def draw(self, color=DEF_COLOR,
              stroke_width=DEF_STROKE_WIDTH,
              stroke_dasharray=DEF_STROKE_DASHARRAY):
 
@@ -82,10 +81,8 @@ class SvgCircle(SvgObj):
         self.attr['cy'] = str(point.y)
         self.attr['r'] = str(self.r)
 
-        return super(SvgCircle, self).draw(point,
-                                           color,
-                                           stroke_width,
-                                           stroke_dasharray)
+        return super(SvgCircle, self).draw(color,
+                                           stroke_width, stroke_dasharray)
 
 
 class SvgPath(SvgObj):
@@ -125,8 +122,7 @@ class SvgPath(SvgObj):
 
         svg_d = self.mk_svg_d(origin, self.points)
         self.attr['d'] = svg_d
-        return super(SvgPath, self).draw(origin, color,
-                                         stroke_width, stroke_dasharray)
+        return super(SvgPath, self).draw(color, stroke_width, stroke_dasharray)
 
 
 class SvgLine(SvgPath):
@@ -165,24 +161,24 @@ class SvgPart1Base(SvgPath):
 
 
 class SvgNeedleHole(SvgPolygon):
-    def __init__(self, parent, w=2, hf=0.7, rf=0.2):
+    def __init__(self, parent, w, h, tf):
         '''
         w: width
-        hf: height factor
-        rf: rotation factor
+        h: height
+        tf: tilt factor
         '''
         self.w = w
-        self.hf = hf
-        self.rf = rf
-        self.gen_points(self.w, self.hf, self.rf)
+        self.h = h
+        self.tf = tf
+        self.gen_points(self.w, self.h, self.tf)
         super(SvgNeedleHole, self).__init__(parent, self.points)
 
-    def gen_points(self, w, hf, rf):
+    def gen_points(self, w, h, tf):
         self.points = []
-        self.points.append(Point(-w / 2,  w * hf * rf))
-        self.points.append(Point( w / 2,  w * hf * (1 - rf)))
-        self.points.append(Point( w / 2, -w * hf * rf))
-        self.points.append(Point(-w / 2, -w * hf * (1 - rf)))
+        self.points.append(Point(-w / 2,  h * tf))
+        self.points.append(Point( w / 2,  h * (1 - tf)))
+        self.points.append(Point( w / 2, -h * tf))
+        self.points.append(Point(-w / 2, -h * (1 - tf)))
 
     def reverse(self):
         for i in range(len(self.points)):
@@ -192,7 +188,8 @@ class SvgNeedleHole(SvgPolygon):
 
 class Part1:
     def __init__(self, parent,
-                 w1, w2, h1, h2, bw, bl, bf, dia1, d1, d2, dia3):
+                 w1, w2, h1, h2, bw, bl, bf, dia1, d1, d2,
+                 needle_w, needle_h, needle_tf):
         self.parent = parent
         self.w1 = w1
         self.w2 = w2
@@ -204,7 +201,9 @@ class Part1:
         self.dia1 = dia1
         self.d1 = d1
         self.d2 = d2
-        self.dia3 = dia3
+        self.needle_w = needle_w
+        self.needle_h = needle_h
+        self.needle_tf = needle_tf
 
         self.points_base = self.mk_points(w1, w2, h1, h2, bw, bl)
         self.base = SvgPart1Base(self.parent, self.points_base,
@@ -214,12 +213,14 @@ class Part1:
         self.points_needle = self.get_needle_points(self.points_base,
                                                     self.w1, self.w2,
                                                     self.h1,
-                                                    self.d1, self.d2,
-                                                    self.dia3)
+                                                    self.d1, self.d2)
 
         self.needle_hole = []
         for p in self.points_needle:
-            self.needle_hole.append((SvgNeedleHole(self.parent, self.dia3), p))
+            self.needle_hole.append((SvgNeedleHole(self.parent,
+                                                   self.needle_w,
+                                                   self.needle_h,
+                                                   self.needle_tf), p))
 
     def mk_points(self, w1, w2, h1, h2, bw, bl):
         points = []
@@ -260,7 +261,7 @@ class Part1:
 
         return points
 
-    def get_needle_points(self, points_base, w1, w2, h1, d1, d2, dia):
+    def get_needle_points(self, points_base, w1, w2, h1, d1, d2):
         rad1 = math.atan((w2 - w1) / (2 * h1))
         rad1a = (math.pi - rad1) / 2
         a1 = d1 / math.tan(rad1a)
@@ -307,16 +308,13 @@ class Part1:
         #
         points2 = []
         for i in range(len(points1)-1):
-            d = self.distance(points1[i], points1[i+1])
+            d = points1[i].distance(points1[i+1])
             n = int(abs(round(d / d2)))
             for p in self.split_points(points1[i], points1[i+1], n):
                 points2.append(p)
         points2.insert(0, points1[0])
 
         return points2
-
-    def distance(self, p1, p2):
-        return math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2)
 
     def split_points(self, p1, p2, n):
         if n == 0:
@@ -337,7 +335,8 @@ class Part1:
                              - self.bw / 2),
                        color='#FF0000')
         for (nh, p) in self.needle_hole:
-            nh.draw(Point(point.x + p.x + self.w2 / 2, point.y + p.y, p.rad),
+            nh.draw(Point(point.x + p.x + self.w2 / 2,
+                          point.y + p.y, p.rad),
                     color='#FF0000')
 
 
@@ -354,7 +353,10 @@ class Part2:
 
         self.needle_hole = []
         for p in self.points_needle:
-            nh = SvgNeedleHole(self.parent, self.part1.dia3).reverse()
+            nh = SvgNeedleHole(self.parent,
+                               self.part1.needle_w,
+                               self.part1.needle_h,
+                               self.part1.needle_tf).reverse()
             self.needle_hole.append((nh, p))
 
     def reverse_points(self, points):
@@ -379,7 +381,8 @@ class Part2:
                              - self.hole.r - self.part1.d1),
                        color='#FF0000')
         for (nh, p) in self.needle_hole:
-            nh.draw(Point(origin.x + p.x + self.part1.w2 / 2, origin.y + p.y,
+            nh.draw(Point(origin.x + p.x + self.part1.w2 / 2,
+                          origin.y + p.y,
                           p.rad),
                     color='#FF0000')
 
@@ -415,8 +418,15 @@ class PlierCover(inkex.Effect):
                                      dest="d1", help="")
         self.OptionParser.add_option("--d2", action="store", type="float",
                                      dest="d2", help="")
-        self.OptionParser.add_option("--dia3", action="store", type="float",
-                                     dest="dia3", help="")
+        self.OptionParser.add_option("--needle_w", action="store",
+                                     type="float",
+                                     dest="needle_w", help="")
+        self.OptionParser.add_option("--needle_h", action="store",
+                                     type="float",
+                                     dest="needle_h", help="")
+        self.OptionParser.add_option("--needle_tf", action="store",
+                                     type="float",
+                                     dest="needle_tf", help="")
 
     def effect(self):
         """
@@ -437,13 +447,15 @@ class PlierCover(inkex.Effect):
 
         d1 = self.options.d1
         d2 = self.options.d2
-        dia3 = self.options.dia3
+        needle_w = self.options.needle_w
+        needle_h = self.options.needle_h
+        needle_tf = self.options.needle_tf
 
         #
         # error check
         #
         if w1 >= w2:
-            msg = "Error: w1(%d) >= w2(%d) !" % (w1, w2)
+            msg = "Error: w1(%d) > w2(%d) !" % (w1, w2)
             inkex.errormsg(msg)
             return
 
@@ -458,15 +470,15 @@ class PlierCover(inkex.Effect):
         origin_point = Point(self.DEF_OFFSET_X, self.DEF_OFFSET_Y)
 
         part1 = Part1(self.current_layer,
-                      w1, w2, h1, h2, bw, bl, bf, dia1, d1, d2, dia3)
+                      w1, w2, h1, h2,
+                      bw, bl, bf, dia1,
+                      d1, d2, needle_w, needle_h, needle_tf)
         part1.draw(origin_point)
 
         origin_point.x += w2 + 10
 
         part2 = Part2(self.current_layer, part1, dia2)
         part2.draw(origin_point)
-
-        return
 
 
 if __name__ == '__main__':
