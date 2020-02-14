@@ -25,8 +25,10 @@ Inkscapeなので、
 
 ### 1.0 Inkscape
 
-``Inkscape`` の拡張機能なので、まずは、``Inkscape`` をインストールして下さい。
-Inkscapeのインストール方法については、下記公式サイトをご参照ください。
+``Inkscape``の拡張機能なので、``Inkscape``が必要です。
+
+まだ、インストールされていない場合は、
+下記公式サイトを参考にインストールして下さい。
 
 => [Inkscape 公式サイト](https://inkscape.org/ja/)
 
