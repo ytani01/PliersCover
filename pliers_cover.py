@@ -110,7 +110,7 @@ class SvgPath(SvgObj):
         self.points = points
         self.type = 'path'
 
-    def mk_svg_d(self, origin_vect, points):
+    def create_svg_d(self, origin_vect, points):
         '''
         to be override
 
@@ -141,7 +141,7 @@ class SvgPath(SvgObj):
 
         self.rotate(origin.rad)
 
-        svg_d = self.mk_svg_d(origin, self.points)
+        svg_d = self.create_svg_d(origin, self.points)
         self.attr['d'] = svg_d
         return super(SvgPath, self).draw(color, stroke_width, stroke_dasharray)
 
@@ -152,8 +152,8 @@ class SvgLine(SvgPath):
 
 
 class SvgPolygon(SvgPath):
-    def mk_svg_d(self, origin, points):
-        svg_d = super(SvgPolygon, self).mk_svg_d(origin, points)
+    def create_svg_d(self, origin, points):
+        svg_d = super(SvgPolygon, self).create_svg_d(origin, points)
         svg_d += ' Z'
         return svg_d
 
@@ -163,7 +163,7 @@ class SvgPart1Base(SvgPolygon):
         super(SvgPart1Base, self).__init__(parent, points)
         self.bw_bf = bw_bf
 
-    def mk_svg_d(self, origin, points, bw_bf=1):
+    def create_svg_d(self, origin, points, bw_bf=1):
         for i, p in enumerate(points):
             (x1, y1) = (p.x + origin.x, p.y + origin.y)
             if i == 0:
@@ -176,7 +176,7 @@ class SvgPart1Base(SvgPolygon):
                 d += ' C %f,%f %f,%f %f,%f' % (x2, y2, x1, y2, x1, y1)
             else:
                 d += ' L %f,%f' % (x1, y1)
-                d += ' Z'
+        d += ' Z'
 
         return d
 
@@ -196,10 +196,10 @@ class SvgNeedleHole(SvgPolygon):
 
     def gen_points(self, w, h, tf):
         self.points = []
-        self.points.append(Vect(-w / 2,  h * tf))
-        self.points.append(Vect( w / 2,  h * (1 - tf)))
-        self.points.append(Vect( w / 2, -h * tf))
-        self.points.append(Vect(-w / 2, -h * (1 - tf)))
+        self.points.append(Point(-w / 2,  h * tf))
+        self.points.append(Point( w / 2,  h * (1 - tf)))
+        self.points.append(Point( w / 2, -h * tf))
+        self.points.append(Point(-w / 2, -h * (1 - tf)))
 
 
 class Part1(object):
@@ -221,24 +221,25 @@ class Part1(object):
         self.needle_h = needle_h
         self.needle_tf = needle_tf
 
-        self.points_base = self.mk_points(w1, w2, h1, h2, bw, bl)
+        self.points_base = self.create_points(w1, w2, h1, h2, bw, bl)
         self.svg_base = SvgPart1Base(self.parent, self.points_base,
                                      (self.bw * self.bf))
         self.hole = SvgCircle(self.parent, self.dia1 / 2)
 
-        self.vects_needle = self.get_needle_vects(self.points_base,
-                                                  self.w1, self.w2,
-                                                  self.h1,
-                                                  self.d1, self.d2)
+        self.vects_needle = self.create_needle_vects(self.points_base,
+                                                     self.w1, self.w2,
+                                                     self.h1,
+                                                     self.d1, self.d2)
 
         self.needle_hole = []
-        for p in self.vects_needle:
-            self.needle_hole.append((SvgNeedleHole(self.parent,
-                                                   self.needle_w,
-                                                   self.needle_h,
-                                                   self.needle_tf), p))
+        for v in self.vects_needle:
+            nh = SvgNeedleHole(self.parent,
+                               self.needle_w,
+                               self.needle_h,
+                               self.needle_tf)
+            self.needle_hole.append((nh, v))
 
-    def mk_points(self, w1, w2, h1, h2, bw, bl):
+    def create_points(self, w1, w2, h1, h2, bw, bl):
         points = []
 
         (x0, y0) = (-(w2 / 2), 0)
@@ -277,7 +278,7 @@ class Part1(object):
 
         return points
 
-    def get_needle_vects(self, points_base, w1, w2, h1, d1, d2):
+    def create_needle_vects(self, points_base, w1, w2, h1, d1, d2):
         rad1 = math.atan((w2 - w1) / (2 * h1))
         rad1a = (math.pi - rad1) / 2
         a1 = d1 / math.tan(rad1a)
@@ -328,24 +329,27 @@ class Part1(object):
             n = int(abs(round(d / d2)))
             for p in self.split_vects(vects1[i], vects1[i+1], n):
                 vects2.append(p)
-                vects2.insert(0, vects1[0])
-
+                
+        vects2.insert(0, vects1[0])
         return vects2
 
-    def split_vects(self, p1, p2, n):
+    def split_vects(self, v1, v2, n):
         if n == 0:
-            return [p1]
-        (dx, dy) = ((p2.x - p1.x) / n, (p2.y - p1.y) / n)
+            return [v1]
+        (dx, dy) = ((v2.x - v1.x) / n, (v2.y - v1.y) / n)
 
-        p = []
+        v = []
         for i in range(n):
-            p.append(Vect(p1.x + dx * (i + 1), p1.y + dy * (i + 1), p1.rad))
-
-        p[-1].rad = (p1.rad + p2.rad) / 2
-        return p
+            v.append(Vect(v1.x + dx * (i + 1),
+                          v1.y + dy * (i + 1),
+                          v1.rad))
+        v[-1].rad = (v1.rad + v2.rad) / 2
+        return v
 
     def draw(self, origin):
-        origin_base = Vect(origin.x + self.w2 / 2, origin.y, origin.rad)
+        origin_base = Vect(origin.x + self.w2 / 2,
+                           origin.y,
+                           origin.rad)
         self.svg_base.draw(origin_base, color='#0000FF')
 
         origin_hole = Point(origin.x + self.w2 / 2,
@@ -366,28 +370,22 @@ class Part2(object):
         self.part1 = part1
         self.dia2 = dia2
 
-
-        self.points_base = []
-        for p in self.part1.points_base:
-            p.mirror()
-            self.points_base.append(p)
-
+        self.points_base = self.part1.svg_base.mirror().points[0:6]
         self.svg_base = SvgPolygon(self.parent, self.points_base)
 
         self.hole = SvgCircle(self.parent, self.dia2 / 2)
 
         self.vects_needle = []
         for v in self.part1.vects_needle:
-            # v.mirror()
             self.vects_needle.append(v.mirror())
 
         self.needle_hole = []
-        for p in self.vects_needle:
+        for v in self.vects_needle:
             nh = SvgNeedleHole(self.parent,
                                self.part1.needle_w,
                                self.part1.needle_h,
                                self.part1.needle_tf).mirror()
-            self.needle_hole.append((nh, p))
+            self.needle_hole.append((nh, v))
 
     def draw(self, origin):
         origin_base = Vect(origin.x + self.part1.w2 / 2,
