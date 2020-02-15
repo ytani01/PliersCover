@@ -1,14 +1,13 @@
 #
 # -*- coding: utf-8 -*-
 #
-# (c) Yoichi Tanibayashi
+# (c) 2020 Yoichi Tanibayashi
 #
 import inkex
 import simplestyle
 import math
 """
-??
-$ sudo apt install python-lxml
+?? $ sudo apt install python-lxml
 """
 inkex.localize()
 
@@ -31,25 +30,25 @@ class Point(object):
     def mirror(self):
         self.x = -self.x
         return self
-    
 
-class Vect(Point):
+
+class Vpoint(Point):
     '''
     (x, y)座標と方向(rad)を持つ点
 
     rad: 方向(真上: 0, 右: math.pi / 2, ..)
     '''
     def __init__(self, x, y, rad=0):
-        super(Vect, self).__init__(x, y)
+        super(Vpoint, self).__init__(x, y)
         self.rad = rad
 
     def rotate(self, rad):
-        super(Vect, self).rotate(rad)
+        super(Vpoint, self).rotate(rad)
         self.rad += rad
         return self
 
     def mirror(self):
-        super(Vect, self).mirror()
+        super(Vpoint, self).mirror()
         self.rad = -self.rad
         return self
 
@@ -110,7 +109,7 @@ class SvgPath(SvgObj):
         self.points = points
         self.type = 'path'
 
-    def create_svg_d(self, origin_vect, points):
+    def create_svg_d(self, origin_vpoint, points):
         '''
         to be override
 
@@ -118,7 +117,7 @@ class SvgPath(SvgObj):
         '''
         svg_d = ''
         for i, p in enumerate(points):
-            (x1, y1) = (p.x + origin_vect.x, p.y + origin_vect.y)
+            (x1, y1) = (p.x + origin_vpoint.x, p.y + origin_vpoint.y)
             if i == 0:
                 svg_d = 'M %f,%f' % (x1, y1)
             else:
@@ -176,8 +175,8 @@ class SvgPart1Base(SvgPolygon):
                 d += ' C %f,%f %f,%f %f,%f' % (x2, y2, x1, y2, x1, y1)
             else:
                 d += ' L %f,%f' % (x1, y1)
+                
         d += ' Z'
-
         return d
 
 
@@ -223,149 +222,155 @@ class Part1(object):
         self.needle_tf = needle_tf
         self.needle_corner_rotation = needle_corner_rotation
 
-        self.points_base = self.create_points(w1, w2, h1, h2, bw, bl)
-        self.svg_base = SvgPart1Base(self.parent, self.points_base,
-                                     (self.bw * self.bf))
-        self.hole = SvgCircle(self.parent, self.dia1 / 2)
+        # グループ作成
+        attr = {inkex.addNS('label', 'inkscape'):'Part1'}
+        self.g = inkex.etree.SubElement(self.parent, 'g', attr)
 
-        self.vects_needle = self.create_needle_vects(
-            self.points_base,
-            self.w1, self.w2,
-            self.h1,
-            self.d1, self.d2)
+        # 図形作成
+        self.points_outline = self.create_points_outline()
+        self.svg_outline = SvgPart1Base(self.g, self.points_outline,
+                                        (self.bw * self.bf))
+        self.svg_hole = SvgCircle(self.g, self.dia1 / 2)
 
-        self.needle_hole = []
-        for v in self.vects_needle:
-            nh = SvgNeedleHole(self.parent,
-                               self.needle_w,
-                               self.needle_h,
-                               self.needle_tf)
-            self.needle_hole.append((nh, v))
+        self.vpoints_needle = self.create_needle_vpoints()
+        self.svgs_needle_hole = []
+        for v in self.vpoints_needle:
+            svg_nh = SvgNeedleHole(self.g,
+                                   self.needle_w,
+                                   self.needle_h,
+                                   self.needle_tf)
+            self.svgs_needle_hole.append((svg_nh, v))
 
-    def create_points(self, w1, w2, h1, h2, bw, bl):
+    def create_points_outline(self):
+        '''
+        外枠の座標を生成
+        '''
         points = []
+        (x0, y0) = (-(self.w2 / 2), 0)
 
-        (x0, y0) = (-(w2 / 2), 0)
-
-        (x, y) = (x0, y0 + h1 + h2)
+        (x, y) = (x0, y0 + self.h1 + self.h2)
         points.append(Point(x, y))
 
-        y = y0 + h1
+        y = y0 + self.h1
         points.append(Point(x, y))
 
-        x = -(w1 / 2)
+        x = -(self.w1 / 2)
         y = y0
         points.append(Point(x, y))
 
-        x = w1 / 2
+        x = self.w1 / 2
         points.append(Point(x, y))
 
-        x = w2 / 2
-        y += h1
+        x = self.w2 / 2
+        y += self.h1
         points.append(Point(x, y))
 
-        y += h2
+        y += self.h2
         points.append(Point(x, y))
 
-        x = bw / 2
+        x = self.bw / 2
         points.append(Point(x, y))
 
-        y += bl - bw / 2
+        y += self.bl - self.bw / 2
         points.append(Point(x, y))
 
-        x = -(bw / 2)
+        x = -(self.bw / 2)
         points.append(Point(x, y))
 
-        y = y0 + h1 + h2
+        y = y0 + self.h1 + self.h2
         points.append(Point(x, y))
 
         return points
 
-    def create_needle_vects(self, points_base, w1, w2, h1, d1, d2):
-        rad1 = math.atan((w2 - w1) / (2 * h1))
+    def create_needle_vpoints(self):
+        '''
+        針穴の点と方向を生成
+        '''
+        rad1 = math.atan((self.w2 - self.w1) / (2 * self.h1))
         rad1a = (math.pi - rad1) / 2
-        a1 = d1 / math.tan(rad1a)
+        a1 = self.d1 / math.tan(rad1a)
 
         rad2 = (math.pi / 2) - rad1
         rad2a = (math.pi - rad2) / 2
-        a2 = d1 / math.tan(rad2a)
+        a2 = self.d1 / math.tan(rad2a)
 
         #
         # 頂点
         #
-        vects1 = []
-        for i, p in enumerate(points_base):
+        vpoints1 = []
+        for i, p in enumerate(self.points_outline):
             (nx, ny) = (p.x, p.y)
             if i == 0:
-                nx += d1
-                ny -= d1 * 1.5
-                vects1.append(Vect(nx, ny, 0))
+                nx += self.d1
+                ny -= self.d1 * 1.5
+                vpoints1.append(Vpoint(nx, ny, 0))
             if i == 1:
-                nx += d1
+                nx += self.d1
                 ny += a1
-                vects1.append(Vect(nx, ny, rad1))
+                vpoints1.append(Vpoint(nx, ny, rad1))
             if i == 2:
                 nx += a2
-                ny += d1
-                vects1.append(Vect(nx, ny, math.pi / 2))
+                ny += self.d1
+                vpoints1.append(Vpoint(nx, ny, math.pi / 2))
             if i == 3:
                 nx -= a2
-                ny += d1
-                vects1.append(Vect(nx, ny, (math.pi / 2) + rad2))
+                ny += self.d1
+                vpoints1.append(Vpoint(nx, ny, (math.pi / 2) + rad2))
             if i == 4:
-                nx -= d1
+                nx -= self.d1
                 ny += a1
-                vects1.append(Vect(nx, ny, math.pi))
+                vpoints1.append(Vpoint(nx, ny, math.pi))
             if i == 5:
-                nx -= d1
-                ny -= d1 * 1.5
-                vects1.append(Vect(nx, ny, math.pi))
+                nx -= self.d1
+                ny -= self.d1 * 1.5
+                vpoints1.append(Vpoint(nx, ny, math.pi))
             if i > 5:
                 break
 
-        #
-        # 頂点を補完する点
-        #
-        vects2 = []
-        for i in range(len(vects1)-1):
-            d = vects1[i].distance(vects1[i+1])
-            n = int(abs(round(d / d2)))
-            for p in self.split_vects(vects1[i], vects1[i+1], n):
-                vects2.append(p)
-                
-        vects2.insert(0, vects1[0])
-        return vects2
+        # 頂点を補完する点を生成
+        vpoints2 = []
+        for i in range(len(vpoints1)-1):
+            d = vpoints1[i].distance(vpoints1[i+1])
+            n = int(abs(round(d / self.d2)))
+            for p in self.split_vpoints(vpoints1[i], vpoints1[i+1], n):
+                vpoints2.append(p)
 
-    def split_vects(self, v1, v2, n):
+        vpoints2.insert(0, vpoints1[0])
+        return vpoints2
+
+    def split_vpoints(self, v1, v2, n):
+        '''
+        v1, v2間をn個に分割して、リストを生成
+        '''
         if n == 0:
             return [v1]
         (dx, dy) = ((v2.x - v1.x) / n, (v2.y - v1.y) / n)
 
         v = []
         for i in range(n):
-            v.append(Vect(v1.x + dx * (i + 1),
-                          v1.y + dy * (i + 1),
-                          v1.rad))
+            v.append(Vpoint(v1.x + dx * (i + 1),
+                            v1.y + dy * (i + 1),
+                            v1.rad))
         if self.needle_corner_rotation:
             v[-1].rad = (v1.rad + v2.rad) / 2
         return v
 
     def draw(self, origin):
-        origin_base = Vect(origin.x + self.w2 / 2,
-                           origin.y,
-                           origin.rad)
-        self.svg_base.draw(origin_base, color='#0000FF')
+        origin_base = Vpoint(origin.x + self.w2 / 2,
+                             origin.y,
+                             origin.rad)
+        self.svg_outline.draw(origin_base, color='#0000FF')
 
         origin_hole = Point(origin.x + self.w2 / 2,
                             origin.y + self.h1 + self.h2 + self.bl
                             - self.bw / 2)
-        self.hole.draw(origin_hole, color='#FF0000')
+        self.svg_hole.draw(origin_hole, color='#FF0000')
 
-        for (nh, p) in self.needle_hole:
-            origin_nh = Vect(origin.x + p.x + self.w2 / 2,
-                             origin.y + p.y,
-                             p.rad)
-            nh.draw(origin_nh, color='#FF0000')
+        for (svg_nh, p) in self.svgs_needle_hole:
+            origin_nh = Vpoint(origin.x + p.x + self.w2 / 2,
+                               origin.y + p.y,
+                               p.rad)
+            svg_nh.draw(origin_nh, color='#FF0000')
 
 
 class Part2(object):
@@ -374,42 +379,53 @@ class Part2(object):
         self.part1 = part1
         self.dia2 = dia2
 
-        self.points_base = self.part1.svg_base.mirror().points[0:6]
-        self.svg_base = SvgPolygon(self.parent, self.points_base)
+        # グループ作成
+        attr = {inkex.addNS('label', 'inkscape'):'Part2'}
+        self.g = inkex.etree.SubElement(self.parent, 'g', attr)
 
-        self.hole = SvgCircle(self.parent, self.dia2 / 2)
+        # 外枠
+        #   ``Part1``の``points_outline``をミラーして、
+        #   最初の6つのポイントを利用
+        self.points_outline = []
+        for i in range(6):
+            self.points_outline.append(self.part1.points_outline[i].mirror())
+            self.svg_outline = SvgPolygon(self.g, self.points_outline)
 
-        self.vects_needle = []
-        for v in self.part1.vects_needle:
-            self.vects_needle.append(v.mirror())
+        # 留め具
+        self.svg_hole = SvgCircle(self.g, self.dia2 / 2)
 
-        self.needle_hole = []
-        for v in self.vects_needle:
-            nh = SvgNeedleHole(self.parent,
-                               self.part1.needle_w,
-                               self.part1.needle_h,
-                               self.part1.needle_tf).mirror()
-            self.needle_hole.append((nh, v))
+        # 針穴
+        #   ``Part1``の``vpoints_needle``をミラーして利用
+        self.svgs_needle_hole = []
+        for v in self.part1.vpoints_needle:
+            v.mirror()
+            # ``SvgNeedleHole``もミラーする
+            svg_nh = SvgNeedleHole(self.g,
+                                   self.part1.needle_w,
+                                   self.part1.needle_h,
+                                   self.part1.needle_tf)
+            svg_nh.mirror()
+            self.svgs_needle_hole.append((svg_nh, v))
 
     def draw(self, origin):
-        origin_base = Vect(origin.x + self.part1.w2 / 2,
-                           origin.y, origin.rad)
-        self.svg_base.draw(origin_base, color='#0000FF')
+        origin_base = Vpoint(origin.x + self.part1.w2 / 2,
+                             origin.y, origin.rad)
+        self.svg_outline.draw(origin_base, color='#0000FF')
 
-        origin_hole = Vect(origin.x + self.part1.w2 / 2,
-                           origin.y + self.part1.h1 + self.part1.h2
-                           - self.hole.r - self.part1.d1,
-                           origin.rad)
-        self.hole.draw(origin_hole, color='#FF0000')
+        origin_hole = Vpoint(origin.x + self.part1.w2 / 2,
+                             origin.y + self.part1.h1 + self.part1.h2
+                             - self.svg_hole.r - self.part1.d1,
+                             origin.rad)
+        self.svg_hole.draw(origin_hole, color='#FF0000')
 
-        for (nh, p) in self.needle_hole:
-            origin_nh = Vect(origin.x + p.x + self.part1.w2 / 2,
-                             origin.y + p.y,
-                             p.rad)
-            nh.draw(origin_nh, color='#FF0000')
+        for (svg_nh, p) in self.svgs_needle_hole:
+            origin_nh = Vpoint(origin.x + p.x + self.part1.w2 / 2,
+                               origin.y + p.y,
+                               p.rad)
+            svg_nh.draw(origin_nh, color='#FF0000')
 
 
-class PlierCover(inkex.Effect):
+class PliersCover(inkex.Effect):
     DEF_OFFSET_X = 20
     DEF_OFFSET_Y = 20
 
@@ -455,57 +471,48 @@ class PlierCover(inkex.Effect):
                                      dest="needle_corner_rotation", help="")
 
     def effect(self):
+        # inkex.errormsg('view_center=%s' % str(self.view_center))
+        # inkex.errormsg('selected=%s' % str(self.selected))
+
         # parameters
-        w1 = self.options.w1
-        w2 = self.options.w2
-        h1 = self.options.h1
-        h2 = self.options.h2
-
-        bw = self.options.bw
-        bl = self.options.bl
-        bf = self.options.bf
-
-        dia1 = self.options.dia1
-        dia2 = self.options.dia2
-
-        d1 = self.options.d1
-        d2 = self.options.d2
-        needle_w = self.options.needle_w
-        needle_h = self.options.needle_h
-        needle_tf = self.options.needle_tf
-        needle_corner_rotation = self.options.needle_corner_rotation
+        opt = self.options
 
         #
         # error check
         #
-        if w1 >= w2:
-            msg = "Error: w1(%d) > w2(%d) !" % (w1, w2)
+        if opt.w1 >= opt.w2:
+            msg = "Error: w1(%d) > w2(%d) !" % (opt.w1, opt.w2)
             inkex.errormsg(msg)
             return
 
-        if dia1 >= bw:
-            msg = "Error: dia1(%d) >= bw(%d) !" % (dia1, bw)
+        if opt.dia1 >= opt.bw:
+            msg = "Error: dia1(%d) >= bw(%d) !" % (opt.dia1, opt.bw)
             inkex.errormsg(msg)
             return
 
         #
         # draw
         #
-        origin_vect = Vect(self.DEF_OFFSET_X, self.DEF_OFFSET_Y)
+        origin_vpoint = Vpoint(self.DEF_OFFSET_X, self.DEF_OFFSET_Y)
 
-        part1 = Part1(self.current_layer,
-                      w1, w2, h1, h2,
-                      bw, bl, bf, dia1,
-                      d1, d2, needle_w, needle_h, needle_tf,
-                      needle_corner_rotation)
-        part1.draw(origin_vect)
+        # グループ作成
+        attr = {inkex.addNS('label', 'inkscape'):'PliersCover'}
+        self.g = inkex.etree.SubElement(self.current_layer, 'g', attr)
 
-        origin_vect.x += w2 + 10
+        part1 = Part1(self.g,
+                      opt.w1, opt.w2, opt.h1, opt.h2,
+                      opt.bw, opt.bl, opt.bf, opt.dia1,
+                      opt.d1, opt.d2,
+                      opt.needle_w, opt.needle_h, opt.needle_tf,
+                      opt.needle_corner_rotation)
+        part1.draw(origin_vpoint)
 
-        part2 = Part2(self.current_layer, part1, dia2)
-        part2.draw(origin_vect)
+        origin_vpoint.x += opt.w2 + 10
+
+        part2 = Part2(self.g, part1, opt.dia2)
+        part2.draw(origin_vpoint)
 
 
 if __name__ == '__main__':
-    e = PlierCover()
+    e = PliersCover()
     e.affect()
