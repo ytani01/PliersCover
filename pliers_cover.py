@@ -191,6 +191,7 @@ class SvgNeedleHole(SvgPolygon):
         self.w = w
         self.h = h
         self.tf = tf
+
         self.gen_points(self.w, self.h, self.tf)
         super(SvgNeedleHole, self).__init__(parent, self.points)
 
@@ -205,7 +206,7 @@ class SvgNeedleHole(SvgPolygon):
 class Part1(object):
     def __init__(self, parent,
                  w1, w2, h1, h2, bw, bl, bf, dia1, d1, d2,
-                 needle_w, needle_h, needle_tf):
+                 needle_w, needle_h, needle_tf, needle_corner_rotation):
         self.parent = parent
         self.w1 = w1
         self.w2 = w2
@@ -220,16 +221,18 @@ class Part1(object):
         self.needle_w = needle_w
         self.needle_h = needle_h
         self.needle_tf = needle_tf
+        self.needle_corner_rotation = needle_corner_rotation
 
         self.points_base = self.create_points(w1, w2, h1, h2, bw, bl)
         self.svg_base = SvgPart1Base(self.parent, self.points_base,
                                      (self.bw * self.bf))
         self.hole = SvgCircle(self.parent, self.dia1 / 2)
 
-        self.vects_needle = self.create_needle_vects(self.points_base,
-                                                     self.w1, self.w2,
-                                                     self.h1,
-                                                     self.d1, self.d2)
+        self.vects_needle = self.create_needle_vects(
+            self.points_base,
+            self.w1, self.w2,
+            self.h1,
+            self.d1, self.d2)
 
         self.needle_hole = []
         for v in self.vects_needle:
@@ -343,7 +346,8 @@ class Part1(object):
             v.append(Vect(v1.x + dx * (i + 1),
                           v1.y + dy * (i + 1),
                           v1.rad))
-        v[-1].rad = (v1.rad + v2.rad) / 2
+        if self.needle_corner_rotation:
+            v[-1].rad = (v1.rad + v2.rad) / 2
         return v
 
     def draw(self, origin):
@@ -445,6 +449,10 @@ class PlierCover(inkex.Effect):
         self.OptionParser.add_option("--needle_tf", action="store",
                                      type="float",
                                      dest="needle_tf", help="")
+        self.OptionParser.add_option("--needle_corner_rotation",
+                                     action="store",
+                                     type="inkbool", default=True,
+                                     dest="needle_corner_rotation", help="")
 
     def effect(self):
         # parameters
@@ -465,6 +473,7 @@ class PlierCover(inkex.Effect):
         needle_w = self.options.needle_w
         needle_h = self.options.needle_h
         needle_tf = self.options.needle_tf
+        needle_corner_rotation = self.options.needle_corner_rotation
 
         #
         # error check
@@ -487,7 +496,8 @@ class PlierCover(inkex.Effect):
         part1 = Part1(self.current_layer,
                       w1, w2, h1, h2,
                       bw, bl, bf, dia1,
-                      d1, d2, needle_w, needle_h, needle_tf)
+                      d1, d2, needle_w, needle_h, needle_tf,
+                      needle_corner_rotation)
         part1.draw(origin_vect)
 
         origin_vect.x += w2 + 10

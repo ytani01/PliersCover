@@ -44,7 +44,7 @@
 	 _gui-text="留め具オス径(dia2)[mm]">10</param>
 
   <param name="title_nuishiro" type="description">
-縫いしろ</param>
+縫いしろ・針穴</param>
   
   <param name="d1" type="float" min="1" max="5"
 	 indent="2"
@@ -60,7 +60,10 @@
 	 _gui-text="針穴高さ(needle_h)[mm]">1</param>
   <param name="needle_tf" type="float" min="-2" max="2"
 	 indent="2"
-	 _gui-text="針穴傾き(needle_tf)[mm]">1</param>
+	 _gui-text="針穴傾き係数(needle_tf)">1</param>
+  <param name="needle_corner_rotation" type="boolean"
+	 indent="2"
+	 _gui-text="角の傾き調整">true</param>
 
   <effect needs-live-preview="true">
     <object-type>all</object-type>
