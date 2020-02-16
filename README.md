@@ -163,14 +163,14 @@ Inkscape起動と同時にこの拡張機能を開くこともでき、
 本拡張機能のID: ``jp.tanibayashi.yoichi.ytani.pliers_cover``
 
 
-#### 2.2.1 Linuxのコマンドラインで起動する場合
+#### 2.2.1 Linux のコマンドラインで起動する場合
 
 ```bash
 $ inkscape --verb jp.tanibayashi.yoichi.ytani.pliers_cover
 ```
 
 
-#### 2.2.2 Windowsのショートカットに登録する方法
+#### 2.2.2 Windows のショートカットに登録する方法
 
 注意！ 元のショートカットを変更せずに、コピーしてから変更しましょう。
 
@@ -289,3 +289,9 @@ attribs_path = {
   'd': 'M 50,60 H 60 l 20,50 Z'
 }
 ```
+
+
+## B. 参考
+
+* [Inkscape公式]()
+* [Kerf Check Parts Generator](http://doyolab.net/appli/kerf_check/kerf_check.html)
