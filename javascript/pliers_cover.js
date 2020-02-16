@@ -5,12 +5,12 @@ function gen_svg() {
 
     var svg_end = "</svg>";
 
-    svg_d = "M 0,0 L 100,0 L 100,100 L 0,100 Z";
     var svg_path = "<path stroke=\"red\" stroke-width=\"0.1\" fill=\"none\" d=";
+    var svg_d = "M 0,0 L 100,0 L 100,100 L 0,100 Z";
 
-    var svg_text = svg_begin + svg_path + svg_d + svg_end;
+    var svg_text = svg_begin + svg_path + "\"" + svg_d + "\"" + svg_end;
 
-    var blob = new Blob([ svg_txt ], { "type": "text/plain" });
+    var blob = new Blob([ svg_text ], { "type": "text/plain" });
 
     //
     if (window.navigator.msSaveBlob) {
