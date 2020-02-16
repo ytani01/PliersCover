@@ -9,7 +9,7 @@ function gen_svg() {
     svg_d = "M 0,0 L 100,0 L 100,100 L 0,100 Z";
     var svg_path = "<path stroke=\"red\" stroke-width=\"0.1\" fill=\"none\" d=";
 
-    var svg_text = svg1 + svg_path + svg_d + svg2;
+    var svg_text = svg_begin + svg_path + svg_d + svg_end;
 
     var blob = new Blob([ svg_txt ], { "type": "text/plain" });
 
