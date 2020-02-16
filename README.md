@@ -172,6 +172,18 @@ $ inkscape --verb jp.tanibayashi.yoichi.ytani.pliers_cover
 
 #### 2.2.2 Windowsのショートカットに登録する方法
 
+注意！ 元のショートカットを変更せずに、コピーしてから変更しましょう。
+
+1. Inkscapeのショートカットを(お好きな方法で)コピー
+
+2. 右クリック → [プロパティ]
+
+3. [ショートカット]-[リンク先] のコマンド名の後にオプションを追加
+
+```
+--verb jp.tanibayashi.yoichi.ytani.pliers_cover
+```
+
 ![Inkscapeショートカットのプロパティ](docs/windows-shortcut0.png)
 
 
