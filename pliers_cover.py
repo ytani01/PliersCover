@@ -5,7 +5,7 @@
 #
 import inkex
 import simplestyle
-import simplepath
+# import simplepath
 import math
 """
 ?? $ sudo apt install python-lxml
@@ -142,9 +142,9 @@ class SvgPath(SvgObj):
         self.rotate(origin.rad)
 
         svg_d = self.create_svg_d(origin, self.points)
-        inkex.errormsg('svg_d=%s' % svg_d)
-        inkex.errormsg('svg_d=%s' % str(simplepath.parsePath( svg_d )))
-        
+        # inkex.errormsg('svg_d=%s' % svg_d)
+        # inkex.errormsg('svg_d=%s' % str(simplepath.parsePath( svg_d )))
+
         self.attr['d'] = svg_d
         return super(SvgPath, self).draw(color, stroke_width, stroke_dasharray)
 
@@ -179,7 +179,7 @@ class SvgPart1Base(SvgPolygon):
                 d += ' C %f,%f %f,%f %f,%f' % (x2, y2, x1, y2, x1, y1)
             else:
                 d += ' L %f,%f' % (x1, y1)
-                
+
         d += ' Z'
         return d
 
@@ -227,7 +227,7 @@ class Part1(object):
         self.needle_corner_rotation = needle_corner_rotation
 
         # グループ作成
-        attr = {inkex.addNS('label', 'inkscape'):'Part1'}
+        attr = {inkex.addNS('label', 'inkscape'): 'Part1'}
         self.g = inkex.etree.SubElement(self.parent, 'g', attr)
 
         # 図形作成
@@ -365,9 +365,9 @@ class Part1(object):
                              origin.rad)
         self.svg_outline.draw(origin_base, color='#0000FF')
 
-        origin_hole = Point(origin.x + self.w2 / 2,
-                            origin.y + self.h1 + self.h2 + self.bl
-                            - self.bw / 2)
+        x = origin.x + self.w2 / 2
+        y = origin.y + self.h1 + self.h2 + self.bl - self.bw / 2
+        origin_hole = Point(x, y)
         self.svg_hole.draw(origin_hole, color='#FF0000')
 
         for (svg_nh, p) in self.svgs_needle_hole:
@@ -384,7 +384,7 @@ class Part2(object):
         self.dia2 = dia2
 
         # グループ作成
-        attr = {inkex.addNS('label', 'inkscape'):'Part2'}
+        attr = {inkex.addNS('label', 'inkscape'): 'Part2'}
         self.g = inkex.etree.SubElement(self.parent, 'g', attr)
 
         # 外枠
@@ -416,10 +416,10 @@ class Part2(object):
                              origin.y, origin.rad)
         self.svg_outline.draw(origin_base, color='#0000FF')
 
-        origin_hole = Vpoint(origin.x + self.part1.w2 / 2,
-                             origin.y + self.part1.h1 + self.part1.h2
-                             - self.svg_hole.r - self.part1.d1,
-                             origin.rad)
+        x = origin.x + self.part1.w2 / 2
+        y = origin.y + self.part1.h1 + self.part1.h2
+        y -= (self.svg_hole.r + self.part1.d1)
+        origin_hole = Vpoint(x, y, origin.rad)
         self.svg_hole.draw(origin_hole, color='#FF0000')
 
         for (svg_nh, p) in self.svgs_needle_hole:
@@ -503,7 +503,7 @@ class PliersCover(inkex.Effect):
         origin_vpoint = Vpoint(self.DEF_OFFSET_X, self.DEF_OFFSET_Y)
 
         # グループ作成
-        attr = {inkex.addNS('label', 'inkscape'):'PliersCover'}
+        attr = {inkex.addNS('label', 'inkscape'): 'PliersCover'}
         self.g = inkex.etree.SubElement(self.current_layer, 'g', attr)
 
         part1 = Part1(self.g,

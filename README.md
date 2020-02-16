@@ -154,6 +154,22 @@ C:\Program Files\Inkscape\share\extensions)
 ![工具の写真と重ねる](docs/sample2.png)
 
 
+### 2.2 起動方法について
+
+Inkscapeの``--verb``オプションで ``id``を指定すると、
+Inkscape起動と同時にこの拡張機能を開くこともでき、
+メニューから探す手間を省けます。
+
+本拡張機能のID: ``jp.tanibayashi.yoichi.ytani.pliers_cover``
+
+
+#### 2.2.1 コマンドラインで起動する場合
+
+```bash
+$ inkscape --verb jp.tanibayashi.yoichi.ytani.pliers_cover
+```
+
+
 ## A. Memo
 
 ### A.1 SVG パスのコマンド
