@@ -8,7 +8,7 @@ function gen_svg() {
 
     var svg_text = svg1 + svg_d + svg2;
 
-    var blob = new Blob([ svgtxt ], {"type": "text/plain"});
+    var blob = new Blob([svg_txt], {"type": "text/plain"});
 
     document.getElementById("download").href = window.URL.createObjectURL(blob);
     window.alert("Finish !");
