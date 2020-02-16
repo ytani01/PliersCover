@@ -1,4 +1,5 @@
 function gen_svg() {
+    window.alert("Finish !");
     var e = document.getElementById("target");
 
     var svg_begin = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"200mm\" height=\"200mm\" viewBox=\"0 0 200 200\">";
