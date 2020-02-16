@@ -9,6 +9,7 @@ function gen_svg() {
     var svg_d = "M 0,0 L 100,0 L 100,100 L 0,100 Z";
 
     var svg_text = svg_begin + svg_path + "\"" + svg_d + "\"" + svg_end;
+    document.getElementById("canvas").innerHTML = svg_text
 
     var blob = new Blob([ svg_text ], { "type": "text/plain" });
 
