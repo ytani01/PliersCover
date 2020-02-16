@@ -172,7 +172,7 @@ $ inkscape --verb jp.tanibayashi.yoichi.ytani.pliers_cover
 
 #### 2.2.2 Windowsのショートカットに登録する方法
 
-![Inkscapeショートカットのプロパティ](docs/windows_shortcut0.png)
+![Inkscapeショートカットのプロパティ](docs/windows-shortcut0.png)
 
 
 
