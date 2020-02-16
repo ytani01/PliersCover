@@ -2,68 +2,90 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
   <_name>工具カバー</_name>
   <id>jp.tanibayashi.yoichi.ytani.pliers_cover</id>
-  <dependency type="executable" location="extensions">pliers_cover.py</dependency>
+  <dependency type="executable"
+	      location="extensions">pliers_cover.py</dependency>
 
-  <param name="title_base" type="description">ベース</param>
+  <param name="tabs" type="notebook">
+    <page name="parameters" _gui-text="基本パラメータ">
+      <param name="title_base" type="description">ベース</param>
+      
+      <param name="w1" type="float" min="1" max="200"
+	     indent="2"
+	     _gui-text="先端の幅(w1)[mm]">20</param>
+      <param name="w2" type="float" min="2" max="200"
+	     indent="2"
+	     _gui-text="最大幅(w2)[mm]">40</param>
+      <param name="h1" type="float" min="1" max="200"
+	     indent="2"
+	     _gui-text="先端部の長さ(h1)[mm]">40</param>
+      <param name="h2" type="float" min="1" max="200"
+	     indent="2"
+	     _gui-text="先端以外の長さ(h2)[mm]">20</param>
+
+      <param name="title_base" type="description">バンド</param>
+      
+      <param name="bw" type="float" min="1" max="30"
+	     indent="2"
+	     _gui-text="バンドの幅(bw)[mm]">15</param>
+      <param name="bl" type="float" min="1" max="90"
+	     indent="2"
+	     _gui-text="バンドの長さ(bl)[mm]">30</param>
+
+      <_param name="title_base" type="description">留め具</_param>
+      
+      <param name="dia1" type="float" min="1" max="50"
+	     indent="2"
+	     _gui-text="留め具メス径(dia1)[mm]">10</param>
+      <param name="dia2" type="float" min="1" max="50"
+	     indent="2"
+	     _gui-text="留め具オス径(dia2)[mm]">10</param>
+
+      <_param name="title_nuishiro" type="description">縫いしろ・針穴</_param>
+      
+      <param name="d1" type="float" min="1" max="5"
+	     indent="2"
+	     _gui-text="縫いしろ(d1)[mm]">3</param>
+      <param name="d2" type="float" min="1" max="10"
+	     indent="2"
+	     _gui-text="針穴間隔(d2)[mm]">3</param>
+    </page>
+    
+    <page name="details" _gui-text="詳細パラメータ">
+      <param name="title_base" type="description">バンド</param>
   
-  <param name="w1" type="float" min="1" max="200"
-	 indent="2"
-	 _gui-text="先端の幅(w1)[mm]">20</param>
-  <param name="w2" type="float" min="2" max="200"
-	 indent="2"
-	 _gui-text="最大幅(w2)[mm]">40</param>
-  <param name="h1" type="float" min="1" max="200"
-	 indent="2"
-	 _gui-text="先端部の長さ(h1)[mm]">40</param>
-  <param name="h2" type="float" min="1" max="200"
-	 indent="2"
-	 _gui-text="先端以外の長さ(h2)[mm]">20</param>
+      <param name="bf" type="float" min="0.1" max="1"
+	     indent="2"
+	     _gui-text="曲線係数(bf)">0.7</param>
+      
+      <param name="title_nuishiro" type="description">針穴</param>
+      
+      <param name="needle_w" type="float" min="0.5" max="4"
+	     indent="2"
+	     _gui-text="針穴幅(needle_w)[mm]">1</param>
+      <param name="needle_h" type="float" min="0.5" max="4"
+	     indent="2"
+	     _gui-text="針穴高さ(needle_h)[mm]">1</param>
+      <param name="needle_tf" type="float" min="-2" max="2"
+	     indent="2"
+	     _gui-text="針穴傾き係数(needle_tf)">1</param>
+      <param name="needle_corner_rotation" type="boolean"
+	     indent="2"
+	     _gui-text="角の傾き調整">true</param>
+    </page>
 
-  <param name="title_base" type="description">
+    <page name="about" _gui-text="PliersCoverについて">
+      <param name="version" type="description"
+	     xml:space="preserve">PiersCover Inkscape extension
 
-バンド</param>
+Version 0.91
+
+by Yoichi Tanibayashi
+
+https://ytani01.github.io/PliersCover/
+      </param>
+    </page>
+  </param>
   
-  <param name="bw" type="float" min="1" max="30"
-	 indent="2"
-	 _gui-text="バンドの幅(bw)[mm]">15</param>
-  <param name="bl" type="float" min="1" max="90"
-	 indent="2"
-	 _gui-text="バンドの長さ(bl)[mm]">30</param>
-  <param name="bf" type="float" min="0.1" max="1"
-	 indent="2"
-	 _gui-text="曲線係数(bf)">0.7</param>
-
-  <param name="title_base" type="description">
-留め具</param>
-  
-  <param name="dia1" type="float" min="1" max="50"
-	 indent="2"
-	 _gui-text="留め具メス径(dia1)[mm]">10</param>
-  <param name="dia2" type="float" min="1" max="50"
-	 indent="2"
-	 _gui-text="留め具オス径(dia2)[mm]">10</param>
-
-  <param name="title_nuishiro" type="description">
-縫いしろ・針穴</param>
-  
-  <param name="d1" type="float" min="1" max="5"
-	 indent="2"
-	 _gui-text="縫いしろ(d1)[mm]">3</param>
-  <param name="d2" type="float" min="1" max="10"
-	 indent="2"
-	 _gui-text="針穴間隔(d2)[mm]">3</param>
-  <param name="needle_w" type="float" min="0.5" max="4"
-	 indent="2"
-	 _gui-text="針穴幅(needle_w)[mm]">1</param>
-  <param name="needle_h" type="float" min="0.5" max="4"
-	 indent="2"
-	 _gui-text="針穴高さ(needle_h)[mm]">1</param>
-  <param name="needle_tf" type="float" min="-2" max="2"
-	 indent="2"
-	 _gui-text="針穴傾き係数(needle_tf)">1</param>
-  <param name="needle_corner_rotation" type="boolean"
-	 indent="2"
-	 _gui-text="角の傾き調整">true</param>
 
   <effect needs-live-preview="true">
     <object-type>all</object-type>

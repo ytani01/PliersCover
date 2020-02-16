@@ -5,6 +5,7 @@
 #
 import inkex
 import simplestyle
+import simplepath
 import math
 """
 ?? $ sudo apt install python-lxml
@@ -141,6 +142,9 @@ class SvgPath(SvgObj):
         self.rotate(origin.rad)
 
         svg_d = self.create_svg_d(origin, self.points)
+        inkex.errormsg('svg_d=%s' % svg_d)
+        inkex.errormsg('svg_d=%s' % str(simplepath.parsePath( svg_d )))
+        
         self.attr['d'] = svg_d
         return super(SvgPath, self).draw(color, stroke_width, stroke_dasharray)
 
@@ -431,6 +435,9 @@ class PliersCover(inkex.Effect):
 
     def __init__(self):
         inkex.Effect.__init__(self)
+        self.OptionParser.add_option("--tabs", action="store", type="string",
+                                     dest="tabs", help="")
+
         self.OptionParser.add_option("--w1", action="store", type="float",
                                      dest="w1", help="")
         self.OptionParser.add_option("--w2", action="store", type="float",
