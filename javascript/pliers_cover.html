@@ -3,18 +3,20 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=4">
-    <script src="pliers_cover.js"></script>
     <title>Pliers Cover</title>
   </head>
 
 
   <body>
-    画面幅: <input id="svg_width" type="text" size="3" readonly>
-    画面高: <input id="svg_height" type="text" size="3" readonly>
-    <hr />
-    長さ: <input id="l1" type="text" size="3" value="10">
-    <input id="btn1" type="button" value="Create SVG" onClick="gen_svg()">
-
+    <form>
+      画面幅: <input id="svg_width" type="text" size="3" readonly>
+      画面高: <input id="svg_height" type="text" size="3" readonly>
+      <hr />
+      長さ: <input id="l1" type="text" size="3" value="10">
+      <input id="btn1" type="button" value="Create SVG" onClick="gen_svg()">
+    </form>
+    
+    <script src="pliers_cover.js"></script>
     <a id="download" href="#" download="pliers_cover.svg"
        onclick="handleDownload()">download</a>
     
