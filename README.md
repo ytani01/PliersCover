@@ -163,11 +163,17 @@ Inkscape起動と同時にこの拡張機能を開くこともでき、
 本拡張機能のID: ``jp.tanibayashi.yoichi.ytani.pliers_cover``
 
 
-#### 2.2.1 コマンドラインで起動する場合
+#### 2.2.1 Linuxのコマンドラインで起動する場合
 
 ```bash
 $ inkscape --verb jp.tanibayashi.yoichi.ytani.pliers_cover
 ```
+
+
+#### 2.2.2 Windowsのショートカットに登録する方法
+
+![Inkscapeショートカットのプロパティ](docs/windows_shortcut0.png)
+
 
 
 ## A. Memo
