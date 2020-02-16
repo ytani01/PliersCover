@@ -180,9 +180,7 @@ $ inkscape --verb jp.tanibayashi.yoichi.ytani.pliers_cover
 
 3. [ショートカット]-[リンク先] のコマンド名の後にオプションを追加
 
-```
---verb jp.tanibayashi.yoichi.ytani.pliers_cover
-```
+``--verb jp.tanibayashi.yoichi.ytani.pliers_cover``
 
 ![Inkscapeショートカットのプロパティ](docs/windows-shortcut0.png)
 
