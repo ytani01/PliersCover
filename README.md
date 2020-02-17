@@ -295,3 +295,4 @@ attribs_path = {
 
 * [Inkscape公式]()
 * [Kerf Check Parts Generator](http://doyolab.net/appli/kerf_check/kerf_check.html)
+* [PlierCover.js](https://github.com/ytani01/PliersCover.js)
