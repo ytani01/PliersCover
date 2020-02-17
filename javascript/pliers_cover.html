@@ -8,19 +8,56 @@
 
 
   <body>
-    <div class="h" id="js">
     <form>
       画面幅: <input id="svg_width" type="text" size="3" readonly>
       <hr />
-      長さ: <input id="l1" type="text" size="3" value="10">
-      <input id="btn1" type="button" value="Create SVG" onClick="gen_svg()">
+
+      <h2>基本パラメーター</h2>
+      ベース:
+      先端の幅 <input id="w1" type="float" size="3" value="15"
+		      onChange="gen_svg('canvas', 'download_link')">
+      最大幅 <input id="w2" type="float" size="3" value="30"
+		    onChange="gen_svg('canvas', 'download_link')">
+      先端部の長さ <input id="h1" type="float" size="3" value="40"
+			  onChange="gen_svg('canvas', 'download_link')">
+      先端以外の長さ <input id="h2" type="float" size="3" value="20"
+			    onChange="gen_svg('canvas', 'download_link')">
+      <br />
+      バンド:
+      幅 <input id="bw" type="float" size="3" value="15"
+		onChange="gen_svg('canvas', 'download_link')">
+      長さ <input id="bl" type="float" size="3" value="50"
+		  onChange="gen_svg('canvas', 'download_link')">
+      <br />
+      留め具:
+      メス径 <input id="dia1" type="float" size="3" value="9"
+		    onChange="gen_svg('canvas', 'download_link')">
+      オス径 <input id="dia2" type="float" size="3" value="9"
+		    onChange="gen_svg('canvas', 'download_link')">
+      <br />
+      縫いしろ・針穴:
+      縫いしろ <input id="d1" type="float" size="3" value="3"
+		      onChange="gen_svg('canvas', 'download_link')">
+      針穴間隔 <input id="d2" type="float" size="3" value="3"
+		      onChange="gen_svg('canvas', 'download_link')">
+
+      <h2>詳細パラメーター</h2>
+      ベース:
+      針穴:
+      
+      <p>
+	長さ: <input id="l1" type="text" size="3" value="3">
+      </p>
+      <input id="btn1" type="button" value="Create SVG"
+	     onClick="gen_svg('canvas', 'download_link')">
     </form>
-    <p id="canvas">
-    </p>
+
+    <a id="download_link" href="#" download="pliers_cover.svg">
+      <input id="btn2" type="button" value="Download SVG"
+	     onClick="do_download('download')"></a>
+    </input>
+    <p id="canvas"></p>
+
     <script src="pliers_cover.js"></script>
-    <a id="download" href="#" download="pliers_cover.svg"
-       onclick="handleDownload()">download</a>
-    </div>
-    
   </body>
 </html>
