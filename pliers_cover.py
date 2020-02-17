@@ -161,9 +161,9 @@ class SvgPolygon(SvgPath):
         return svg_d
 
 
-class SvgPart1Base(SvgPolygon):
+class SvgPart1Outline(SvgPolygon):
     def __init__(self, parent, points, bw_bf):
-        super(SvgPart1Base, self).__init__(parent, points)
+        super(SvgPart1Outline, self).__init__(parent, points)
         self.bw_bf = bw_bf
 
     def create_svg_d(self, origin, points, bw_bf=1):
@@ -232,8 +232,8 @@ class Part1(object):
 
         # 図形作成
         self.points_outline = self.create_points_outline()
-        self.svg_outline = SvgPart1Base(self.g, self.points_outline,
-                                        (self.bw * self.bf))
+        self.svg_outline = SvgPart1Outline(self.g, self.points_outline,
+                                           (self.bw * self.bf))
         self.svg_hole = SvgCircle(self.g, self.dia1 / 2)
 
         self.vpoints_needle = self.create_needle_vpoints()
@@ -393,7 +393,8 @@ class Part2(object):
         self.points_outline = []
         for i in range(6):
             self.points_outline.append(self.part1.points_outline[i].mirror())
-            self.svg_outline = SvgPolygon(self.g, self.points_outline)
+
+        self.svg_outline = SvgPolygon(self.g, self.points_outline)
 
         # 留め具
         self.svg_hole = SvgCircle(self.g, self.dia2 / 2)
