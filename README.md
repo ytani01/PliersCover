@@ -19,6 +19,10 @@ Inkscapeエクステンション(拡張機能)です。
 
 針穴は菱目で、位置は、必ず角に来るように自動的に調整されます。
 
+このツールで作成した図面を Inkscapeで編集することもできます。
+
+[JavaScript版](https://ytani01.github.io/PliersCover.js/)もあります。
+
 
 ## 1. インストール
 
